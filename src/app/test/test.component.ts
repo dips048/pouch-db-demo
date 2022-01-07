@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { LocalDbService } from '../services';
-import { LocalDbFindService } from '../services/local-db-find.service';
+import { GetHttpService, WorkerService } from '../services';
+import { PouchFindService } from '../services/pouch-find.service';
+import { TokenModel } from '../tokens.model';
 
 @Component({
   selector: 'app-test',
@@ -9,7 +10,7 @@ import { LocalDbFindService } from '../services/local-db-find.service';
 })
 export class TestComponent implements OnInit {
 
-  data = {
+  demoData = {
     _id: 'job_003',
     serviceDate: '2018-02-03',
     name: 'abc',
@@ -24,82 +25,42 @@ export class TestComponent implements OnInit {
       description: 'Driveway repair',
       price: 225
     }]
-  }
+  };
   job: any;
-  datas = [
-    {
-      endIndex: 7,
-      height: 11,
-      pageNumber: 1,
-      startIndex: 0,
-      value: 'Exhibit',
-      width: 126,
-      xPosition: 2222,
-      yPosition: 152
-    },
-    {
-      endIndex: 7,
-      height: 12,
-      pageNumber: 2,
-      startIndex: 0,
-      value: 'Exhibit',
-      width: 126,
-      xPosition: 2222,
-      yPosition: 152
-    },
-    {
-      endIndex: 7,
-      height: 11,
-      pageNumber: 3,
-      startIndex: 0,
-      value: 'Exhibit',
-      width: 126,
-      xPosition: 2222,
-      yPosition: 152
-    }
-  ];
+  tokens: TokenModel[];
 
   constructor(
-    private localDbService: LocalDbService,
-    private localDbFindService: LocalDbFindService
+    private WorkerService: WorkerService,
+    private pouchFindService: PouchFindService,
+    private getHttpService: GetHttpService
   ) { }
 
   ngOnInit(): void {
     this.createDatabase();
-    this.createIndexes();
+    this.getHttpService.getTokensData().subscribe(res => {
+      console.log('res', res);
+      if(res) {
+        this.tokens = res;
+      }
+    })
   }
 
   createDatabase() {
-    this.localDbService.createDB('jobs');
+    this.WorkerService.createDB('jobs');
+    this.pouchFindService.createDB('jobs');
+    this.createIndexes();
   }
 
   addDocs() {
-    this.localDbService.addBulkDocs(this.datas).then((docs: any) => {
+    this.WorkerService.addBulkDocs(this.tokens).then((docs: any) => {
       console.log('bulk of documents added',docs);
     }).catch((err: any) => {
       console.log(err);
     });
   }
 
-  addDoc() {
-    this.localDbService.addSingleDoc(this.data).then((doc: any) => {
-      console.log('document added',doc);
-    }).catch((err: any) => {
-      console.log(err);
-    });
-  }
-
-  getDoc() {
-    this.localDbService.getSingleDoc("job_003").then((doc: any) => {
-      this.job = doc;
-      console.log("data", doc);
-    }).catch((err) => {
-      console.log(err);
-    });
-  }
-
   getAllDocIdsAndRevs() {
-    this.localDbService.getAllDocIdsAndRevs().then((docs: any) => {
+    this.WorkerService.getAllDocIdsAndRevs().then((docs: any) => {
       console.log("all docs", docs);
     }).catch((err) => {
       console.log(err);
@@ -107,32 +68,32 @@ export class TestComponent implements OnInit {
   }
 
   countDocuments() {
-    this.localDbService.countDocuments().then((count: any) => {
+    this.WorkerService.countDocuments().then((count: any) => {
       console.log("total rows", count);
     }).catch((err) => {
       console.log(err);
     });
   }
 
-
-  createIndexes() {
-    this.localDbFindService.createIndexes(['pageNumber']).then((response: any) => {
-      console.log('index added',response);
+  addDoc() {
+    this.WorkerService.addSingleDoc(this.demoData).then((doc: any) => {
+      console.log('document added',doc);
     }).catch((err: any) => {
       console.log(err);
     });
   }
 
-  find() {
-    this.localDbFindService.findByPageNumber(2).then((response: any) => {
-      console.log(response);
-    }).catch((err: any) => {
+  getDoc() {
+    this.WorkerService.getSingleDoc("job_003").then((doc: any) => {
+      this.job = doc;
+      console.log("data", doc);
+    }).catch((err) => {
       console.log(err);
     });
-  };
+  }
 
   updateJob() {
-    this.localDbService.updateData("job_003").then((doc: any) => {
+    this.WorkerService.updateData("job_003").then((doc: any) => {
       console.log("data updated", doc);
     }).catch((err) => {
       console.log(err);
@@ -140,7 +101,7 @@ export class TestComponent implements OnInit {
   };
 
   deleteJob() {
-    this.localDbService.deleteData("job_003").then((doc: any) => {
+    this.WorkerService.deleteData("job_003").then((doc: any) => {
       console.log("data deleted");
     }).catch((err) => {
       console.log(err);
@@ -148,11 +109,39 @@ export class TestComponent implements OnInit {
   };
 
   compactDB(){
-    this.localDbService.compactDB();
+    this.WorkerService.compactDB();
   };
 
   destroyDatabase(){
-    this.localDbService.destroyDatabase();
+    this.WorkerService.destroyDatabase();
   }
+
+  createIndexes() {
+    this.pouchFindService.createIndex(['pageNumber']).then((response: any) => {
+      console.log('index added',response);
+    }).catch((err: any) => {
+      console.log(err);
+    });
+    this.pouchFindService.createIndex(['value']).then((response: any) => {
+      console.log('index added',response);
+    }).catch((err: any) => {
+      console.log(err);
+    });
+  }
+
+  find() {
+    // this.createIndexes();
+    this.pouchFindService.findByPageNumber(2).then((response: any) => {
+      console.log(response);
+    }).catch((err: any) => {
+      console.log(err);
+    });
+
+    this.pouchFindService.findByPageValue().then((response: any) => {
+      console.log(response);
+    }).catch((err: any) => {
+      console.log(err);
+    });
+  };
 
 }

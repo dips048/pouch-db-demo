@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { PouchDbWorkerService } from './pouch-db-worker.service';
+import { WorkerService } from './worker.service';
 
-describe('PouchDbWorkerService', () => {
-  let service: PouchDbWorkerService;
+describe('WorkerService', () => {
+  let service: WorkerService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(PouchDbWorkerService);
+    service = TestBed.inject(WorkerService);
   });
 
   it('should be created', () => {

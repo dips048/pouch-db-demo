@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { LocalDbService } from './local-db.service';
+import { PouchFindService } from './pouch-find.service';
 
-describe('LocalDbService', () => {
-  let service: LocalDbService;
+describe('PouchFindService', () => {
+  let service: PouchFindService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(LocalDbService);
+    service = TestBed.inject(PouchFindService);
   });
 
   it('should be created', () => {

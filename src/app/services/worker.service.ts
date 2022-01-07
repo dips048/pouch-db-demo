@@ -1,19 +1,13 @@
 import { Injectable } from '@angular/core';
-// import pouchFind from 'pouchdb-find';
 import PouchDB from 'pouchdb';
+// for this we have to add  "noImplicitAny": false to tsconfig file
 import WorkerPouch from 'worker-pouch';
-
-// (<any>PouchDB).adapter('worker', require('worker-pouch'));
-// declare var require: any;
-
 (<any>PouchDB).adapter('worker', WorkerPouch)
-
-// PouchDB.plugin(pouchFind);
 
 @Injectable({
   providedIn: 'root'
 })
-export class LocalDbService {
+export class WorkerService {
   db: PouchDB.Database<{}>;
 
   constructor() {
@@ -22,8 +16,8 @@ export class LocalDbService {
     });
   }
 
-  createDB(dbName: string = 'jobs') {
-    this.db = new PouchDB(dbName);
+  createDB(dbName: string = 'example') {
+    this.db = new PouchDB(dbName, {adapter: 'worker'});
   }
 
   addBulkDocs(data: any[]){
@@ -48,22 +42,6 @@ export class LocalDbService {
   getSingleDoc(id: string): Promise<any> {
     return this.db.get(id);
   };
-
-  // createIndexes(indexes: Array<string>): Promise<PouchDB.Find.CreateIndexResponse<{}>> {
-  //   return this.db.createIndex({
-  //     index: {
-  //       fields: indexes
-  //     }
-  //   });
-  // };
-
-  // findByPageNumber(searchValue = 1): Promise<PouchDB.Find.FindResponse<{}>> {
-  //   return this.db.find({
-  //     selector: { "pageNumber": searchValue },
-  //     sort: ['pageNumber'],
-  //     fields: ['pageNumber', 'value', 'startIndex']
-  //   })
-  // };
 
   updateData(id: string): Promise<any> {
     return this.db.get(id)

@@ -1,0 +1,32 @@
+<div>
+  <input type="text" #dbName value='example'>
+  <button (click)="createDatabase(dbName.value);">Create Database</button>
+</div>
+
+<div>
+  <button (click)="destroyDatabase();">Destroy Database</button>
+</div>
+
+<div>
+  <button (click)="addDocs(tokens)">Add Tokens</button>
+  <button (click)="addDocs(pages)">Add Pages</button>
+  <button (click)="getAllDocIdsAndRevs();">Get All Documents</button>
+</div>
+
+<div>
+  <input type="number"  value="1" #pageNumber>
+  <button (click)="findDocsByPageNumber(pageNumber.value);">Find Docs By Page Number</button>
+</div>
+
+<div>
+  <input type="text" value="Exhibit" #PageValue>
+  <button (click)="findDocsByPageValue(PageValue.value);">Find Docs By Value</button>
+</div>
+
+<!-- <div>
+  <button (click)="addDoc()">add job</button>
+  <button (click)="getDoc();">Get a Job</button>
+  <button (click)="updateJob();">Update a Job</button>
+  <button (click)="deleteJob();">Delete a Job</button>
+  <button (click)="compactDB();">Compact</button>
+</div> -->

@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { LocalDbFindService } from './local-db-find.service';
+import { GetHttpService } from './get-http.service';
 
-describe('LocalDbFindService', () => {
-  let service: LocalDbFindService;
+describe('GetHttpService', () => {
+  let service: GetHttpService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(LocalDbFindService);
+    service = TestBed.inject(GetHttpService);
   });
 
   it('should be created', () => {
