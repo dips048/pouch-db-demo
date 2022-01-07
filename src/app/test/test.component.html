@@ -1,0 +1,14 @@
+<div>
+  <button (click)="addJob()">add job</button>
+  <button (click)="find()">find customer</button>
+  <button (click)="getJob();">Get a Job</button>
+  <button (click)="updateJob();">Update a Job</button>
+  <button (click)="deleteJob();">Delete a Job</button>
+  <button (click)="compactDB();">Compact</button>
+  <button (click)="destroyDatabase();">Destroy</button>
+</div>
+
+<div>
+  {{job | json}}
+</div>
+
