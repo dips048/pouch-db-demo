@@ -1,11 +1,20 @@
 <div>
-  <button (click)="addJob()">add job</button>
-  <button (click)="find()">find customer</button>
-  <button (click)="getJob();">Get a Job</button>
+  <button (click)="createDatabase();">Create Database</button>
+  <button (click)="destroyDatabase();">Destroy Database</button>
+</div>
+<div>
+  <button (click)="addDoc()">add job</button>
+  <button (click)="getDoc();">Get a Job</button>
   <button (click)="updateJob();">Update a Job</button>
   <button (click)="deleteJob();">Delete a Job</button>
   <button (click)="compactDB();">Compact</button>
-  <button (click)="destroyDatabase();">Destroy</button>
+</div>
+
+<div>
+  <button (click)="addDocs()">Add Documents</button>
+  <button (click)="getAllDocIdsAndRevs();">Get All Documents</button>
+  <button (click)="countDocuments()">get Count</button>
+  <button (click)="find()">find</button>
 </div>
 
 <div>

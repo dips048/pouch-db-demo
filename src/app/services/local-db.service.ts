@@ -1,8 +1,14 @@
 import { Injectable } from '@angular/core';
-import pouchFind from 'pouchdb-find';
+// import pouchFind from 'pouchdb-find';
 import PouchDB from 'pouchdb';
+import WorkerPouch from 'worker-pouch';
 
-PouchDB.plugin(pouchFind);;
+// (<any>PouchDB).adapter('worker', require('worker-pouch'));
+// declare var require: any;
+
+(<any>PouchDB).adapter('worker', WorkerPouch)
+
+// PouchDB.plugin(pouchFind);
 
 @Injectable({
   providedIn: 'root'
@@ -16,32 +22,48 @@ export class LocalDbService {
     });
   }
 
-  createDB(dbName: string) {
+  createDB(dbName: string = 'jobs') {
     this.db = new PouchDB(dbName);
   }
 
+  addBulkDocs(data: any[]){
+    return this.db.bulkDocs(data);
+  };
+
   addSingleDoc(data: any): Promise<PouchDB.Core.Response> {
     return this.db.put(data);
+  };
+
+  getAllDocIdsAndRevs(): Promise<any> {
+    return this.db.allDocs();
+  };
+
+  countDocuments() {
+    return this.db.allDocs({
+      limit: 0,
+      include_docs: false
+    });
   }
 
   getSingleDoc(id: string): Promise<any> {
     return this.db.get(id);
-  }
+  };
 
-  createIndexes(indexes: Array<string>): Promise<PouchDB.Find.CreateIndexResponse<{}>> {
-    return this.db.createIndex({
-      index: {
-        fields: indexes
-      }
-    });
-  }
+  // createIndexes(indexes: Array<string>): Promise<PouchDB.Find.CreateIndexResponse<{}>> {
+  //   return this.db.createIndex({
+  //     index: {
+  //       fields: indexes
+  //     }
+  //   });
+  // };
 
-  findName(searchValue: string = "abc"): Promise<PouchDB.Find.FindResponse<{}>> {
-    return this.db.find({
-      selector: { "name": searchValue },
-      sort: ['name']
-    })
-  }
+  // findByPageNumber(searchValue = 1): Promise<PouchDB.Find.FindResponse<{}>> {
+  //   return this.db.find({
+  //     selector: { "pageNumber": searchValue },
+  //     sort: ['pageNumber'],
+  //     fields: ['pageNumber', 'value', 'startIndex']
+  //   })
+  // };
 
   updateData(id: string): Promise<any> {
     return this.db.get(id)
@@ -52,7 +74,7 @@ export class LocalDbService {
         // Update the document
         return this.db.put(doc);
       });
-  }
+  };
 
   deleteData(id: string): Promise<any> {
     // Get the job
@@ -61,7 +83,7 @@ export class LocalDbService {
         // Delete the job
         return this.db.remove(doc);
       });
-  }
+  };
 
   compactDB(){
     if (this.db) {
@@ -74,7 +96,7 @@ export class LocalDbService {
     else {
       console.log("Please open the database first.");
     }
-  }
+  };
 
   destroyDatabase() {
     if (this.db) {
