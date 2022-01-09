@@ -16,11 +16,13 @@ export class PouchFindService {
     });
   }
 
-  createDB(dbName: string = 'jobs') {
+ private createDB(dbName: string = 'jobs') {
     this.db = new PouchDB(dbName);
   }
 
-  destroyDatabase() {
+  destroyDatabase(dbName: string) {
+    this.createDB(dbName);
+
     if (this.db) {
       this.db.destroy().then((response) => {
         console.log("Database deleted.");
@@ -34,7 +36,8 @@ export class PouchFindService {
     }
   };
 
-  createIndex(index: Array<string>): Promise<PouchDB.Find.CreateIndexResponse<{}>> {
+  createIndex(dbName:string, index: Array<string>): Promise<PouchDB.Find.CreateIndexResponse<{}>> {
+    this.createDB(dbName);
     console.log(this.db);
     return this.db.createIndex({
       index: {

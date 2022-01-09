@@ -5,6 +5,7 @@ import { AppComponent } from './app.component';
 import { TestComponent } from './test/test.component';
 import { HttpClientModule } from '@angular/common/http';
 import { PouchDbInteractionComponent } from './components/pouch-db-interaction/pouch-db-interaction.component';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -14,6 +15,7 @@ import { PouchDbInteractionComponent } from './components/pouch-db-interaction/p
   ],
   imports: [
     BrowserModule,
+    FormsModule,
     HttpClientModule
   ],
   providers: [],

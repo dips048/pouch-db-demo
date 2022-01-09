@@ -16,11 +16,12 @@ export class WorkerService {
     });
   }
 
-  createDB(dbName: string = 'example') {
+  private createDB(dbName: string = 'example') {
     this.db = new PouchDB(dbName, {adapter: 'worker'});
   }
 
-  addBulkDocs(data: any[]){
+  addBulkDocs(dbName:string, data: any[]){
+    this.createDB(dbName);
     return this.db.bulkDocs(data);
   };
 
@@ -76,7 +77,8 @@ export class WorkerService {
     }
   };
 
-  destroyDatabase() {
+  destroyDatabase(DBName:string ) {
+    this.createDB(DBName);
     if (this.db) {
       this.db.destroy().then((response) => {
         console.log("Database deleted.");
