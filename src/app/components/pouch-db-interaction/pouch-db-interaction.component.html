@@ -1,26 +1,28 @@
 <div>
-  <input type="text" #dbName value='example'>
-  <button (click)="createDatabase(dbName.value);">Create Database</button>
+  <input type="text" class="dbId" [(ngModel)]="dbId">
+  <button (click)="generateDbId(); FindPgDb.value=dbId; FindVaDb.value = dbId">Generate Id</button>
 </div>
 
 <div>
-  <button (click)="destroyDatabase();">Destroy Database</button>
+  <button (click)="destroyDatabase(dbId);">Destroy Database</button>
 </div>
 
 <div>
-  <button (click)="addDocs(tokens)">Add Tokens</button>
-  <button (click)="addDocs(pages)">Add Pages</button>
+  {{dbId}} <br>  <button (click)="setTokens(dbId)">Add Tokens</button>
+  <button (click)="setPages(dbId)">Add Pages</button>
   <button (click)="getAllDocIdsAndRevs();">Get All Documents</button>
 </div>
 
 <div>
-  <input type="number"  value="1" #pageNumber>
-  <button (click)="findDocsByPageNumber(pageNumber.value);">Find Docs By Page Number</button>
+  <input type="text" class="dbId" #FindPgDb value='dbname1'>
+  <input type="number" value="3" #pageNumber>
+  <button (click)="findDocsByPageNumber(FindPgDb.value, pageNumber.value);">Find Docs By Page Number</button>
 </div>
 
 <div>
+  <input type="text" class="dbId" #FindVaDb value='dbname1'>
   <input type="text" value="Exhibit" #PageValue>
-  <button (click)="findDocsByPageValue(PageValue.value);">Find Docs By Value</button>
+  <button (click)="findDocsByPageValue(FindVaDb.value, PageValue.value);">Find Docs By Value</button>
 </div>
 
 <!-- <div>

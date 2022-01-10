@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { CONSTANTS } from 'src/shared/constants';
 import { GetHttpService, WorkerService } from '../../services';
 import { PouchFindService } from '../../services';
 import { TokenModel } from '../../tokens.model';
@@ -9,7 +10,7 @@ import { TokenModel } from '../../tokens.model';
   styleUrls: ['./pouch-db-interaction.component.scss']
 })
 export class PouchDbInteractionComponent implements OnInit {
-
+  dbId: string = "dbname1"
   pages: any;
   tokens: TokenModel[];
 
@@ -20,36 +21,53 @@ export class PouchDbInteractionComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.getHttpService.getTokensData().subscribe(res => {
-      console.log('tokens', res);
-      if(res) {
-        this.tokens = res;
-      }
-    });
+
+  }
+
+  setPages(dbId: string) {
     this.getHttpService.getPagesData().subscribe(res => {
       console.log('pages', res);
-      if(res) {
-        this.pages = res;
-      }
-    })
-  }
+      this.WorkerService.addBulkDocs(`doc-images-${dbId}`, res);
 
-  createDatabase(dbName: string) {
-    this.WorkerService.createDB(dbName);
-    this.pouchFindService.createDB(dbName);
-  }
-
-  destroyDatabase(){
-    this.WorkerService.destroyDatabase();
-    this.pouchFindService.destroyDatabase();
-  }
-
-  addDocs(data: any[]) {
-    this.WorkerService.addBulkDocs(data).then((docs: any) => {
-      console.log('bulk of documents added',docs);
-    }).catch((err: any) => {
-      console.log(err);
     });
+  }
+
+  setTokens(dbId: string) {
+    this.getHttpService.getTokensData().subscribe(res => {
+      console.log('tokens', res);
+      this.WorkerService.addBulkDocs(`doc-tokens-${dbId}`, res).then(r => {
+        this.pouchFindService.createIndex(`doc-tokens-${dbId}`, ['pageNumber']);
+      })
+    });
+  }
+
+  generateDbId() {
+    // this.WorkerService.createDB(dbName);
+    // this.pouchFindService.createDB(dbName);
+    this.dbId = this.generateUUID();
+  }
+
+  generateUUID() { // Public Domain/MIT
+    var d = new Date().getTime();//Timestamp
+    var d2 = ((typeof performance !== 'undefined') && performance.now && (performance.now() * 1000)) || 0;//Time in microseconds since page-load or 0 if unsupported
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+      var r = Math.random() * 16;//random number between 0 and 16
+      if (d > 0) {//Use timestamp until depleted
+        r = (d + r) % 16 | 0;
+        d = Math.floor(d / 16);
+      } else {//Use microseconds since page-load if supported
+        r = (d2 + r) % 16 | 0;
+        d2 = Math.floor(d2 / 16);
+      }
+      return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+    });
+  }
+
+
+  destroyDatabase(dbId: string) {
+    // this.WorkerService.destroyDatabase(DBName);
+    this.pouchFindService.destroyDatabase(`doc-images-${dbId}`);
+    this.pouchFindService.destroyDatabase(`doc-tokens-${dbId}`);
   }
 
   getAllDocIdsAndRevs() {
@@ -60,24 +78,24 @@ export class PouchDbInteractionComponent implements OnInit {
     });
   };
 
-  findDocsByPageNumber(pageNumber: string = "1") {
-    this.pouchFindService.createIndex(['pageNumber']).then(() => {
-      this.pouchFindService.findByPageNumber(parseInt(pageNumber)).then((response: any) => {
+  findDocsByPageNumber(dbId: string, pageNumber: string = "1") {
+    this.pouchFindService.findByPageNumber(`doc-tokens-${dbId}`, parseInt(pageNumber))
+      .then((response: any) => {
         console.log(response);
       })
-    }).catch((err: any) => {
-      console.log(err);
-    });
   }
 
-  findDocsByPageValue(value: string) {
-    this.pouchFindService.createIndex(['value']).then(() => {
-      this.pouchFindService.findByPageValue((value)).then((response: any) => {
-        console.log(response);
+  findDocsByPageValue(dbId: string, value: string) {
+    this.pouchFindService.createIndex(`doc-images-${dbId}`, ['value'])
+      .then(() => {
+        this.pouchFindService.findByPageValue((value))
+          .then((response: any) => {
+            console.log(response);
+          })
       })
-    }).catch((err: any) => {
-      console.log(err);
-    });
+      .catch((err: any) => {
+        console.log(err);
+      });
   };
 
 

@@ -10,6 +10,7 @@ import { TokenModel } from '../tokens.model';
 })
 export class TestComponent implements OnInit {
 
+  dbName:string = 'example'
   demoData = {
     _id: 'job_003',
     serviceDate: '2018-02-03',
@@ -46,13 +47,13 @@ export class TestComponent implements OnInit {
   }
 
   createDatabase() {
-    this.WorkerService.createDB('jobs');
-    this.pouchFindService.createDB('jobs');
-    this.createIndexes();
+    // this.WorkerService.createDB('jobs');
+    // this.pouchFindService.createDB('jobs');
+    // this.createIndexes();
   }
 
   addDocs() {
-    this.WorkerService.addBulkDocs(this.tokens).then((docs: any) => {
+    this.WorkerService.addBulkDocs('example', this.tokens).then((docs: any) => {
       console.log('bulk of documents added',docs);
     }).catch((err: any) => {
       console.log(err);
@@ -113,16 +114,16 @@ export class TestComponent implements OnInit {
   };
 
   destroyDatabase(){
-    this.WorkerService.destroyDatabase();
+    this.WorkerService.destroyDatabase(this.dbName);
   }
 
   createIndexes() {
-    this.pouchFindService.createIndex(['pageNumber']).then((response: any) => {
+    this.pouchFindService.createIndex(this.dbName,['pageNumber']).then((response: any) => {
       console.log('index added',response);
     }).catch((err: any) => {
       console.log(err);
     });
-    this.pouchFindService.createIndex(['value']).then((response: any) => {
+    this.pouchFindService.createIndex(this.dbName,['value']).then((response: any) => {
       console.log('index added',response);
     }).catch((err: any) => {
       console.log(err);
@@ -131,13 +132,13 @@ export class TestComponent implements OnInit {
 
   find() {
     // this.createIndexes();
-    this.pouchFindService.findByPageNumber(2).then((response: any) => {
+    this.pouchFindService.findByPageNumber(this.dbName,2).then((response: any) => {
       console.log(response);
     }).catch((err: any) => {
       console.log(err);
     });
 
-    this.pouchFindService.findByPageValue().then((response: any) => {
+    this.pouchFindService.findByPageValue(this.dbName).then((response: any) => {
       console.log(response);
     }).catch((err: any) => {
       console.log(err);
