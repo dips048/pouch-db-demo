@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import PouchDB from 'pouchdb';
 // for this we have to add  "noImplicitAny": false to tsconfig file
 import WorkerPouch from 'worker-pouch';
+import { PouchFindService } from '.';
 (<any>PouchDB).adapter('worker', WorkerPouch)
 
 @Injectable({
@@ -10,7 +11,9 @@ import WorkerPouch from 'worker-pouch';
 export class WorkerService {
   db: PouchDB.Database<{}>;
 
-  constructor() {
+  constructor(
+    private pouchFindService: PouchFindService
+  ) {
     PouchDB.on("created", (dbname: string) => {
       console.log("Database: '" + dbname + "' opened successfully.");
     });
@@ -22,7 +25,15 @@ export class WorkerService {
 
   addBulkDocs(dbName:string, data: any[]){
     this.createDB(dbName);
-    return this.db.bulkDocs(data);
+    return this.pouchFindService.createIndex(dbName, ['pageNumber']).then(() => {
+      return this.pouchFindService.findByPageNumber(dbName, parseInt(data[0].pageNumber)).then(r => {
+        if(r.docs.length){
+          throw new Error('data already exist');
+        }
+        return this.db.bulkDocs(data);
+      })
+    })
+
   };
 
   addSingleDoc(data: any): Promise<PouchDB.Core.Response> {

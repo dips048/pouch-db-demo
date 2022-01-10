@@ -9,7 +9,7 @@
 
 <div>
   {{dbId}} <br>  <button (click)="setTokens(dbId)">Add Tokens</button>
-  <button (click)="setPages(dbId)">Add Pages</button>
+  <button (click)="setPages(dbId);">Add Pages</button>
   <button (click)="getAllDocIdsAndRevs();">Get All Documents</button>
 </div>
 
@@ -24,6 +24,11 @@
   <input type="text" value="Exhibit" #PageValue>
   <button (click)="findDocsByPageValue(FindVaDb.value, PageValue.value);">Find Docs By Value</button>
 </div>
+
+<button (click)="startCounter()">start</button>
+<button (click)="stopCounter()">stop</button>
+<button (click)="clearCounter()">clear</button>
+<div> counter: {{counter}} </div>
 
 <!-- <div>
   <button (click)="addDoc()">add job</button>

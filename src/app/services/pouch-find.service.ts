@@ -72,5 +72,16 @@ export class PouchFindService {
     })
   };
 
+  addBulkDocs(dbName:string, data: any[]){
+    const db = this.createDB(dbName);
+    this.createDB(dbName);
+    return db.bulkDocs(data);
+  };
+
+  getAllDocIdsAndRevs(dbName:string,): Promise<any> {
+    const db = this.createDB(dbName);
+    return db.allDocs();
+  };
+
 
 }

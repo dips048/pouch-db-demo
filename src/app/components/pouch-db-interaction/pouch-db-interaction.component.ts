@@ -13,6 +13,8 @@ export class PouchDbInteractionComponent implements OnInit {
   dbId: string = "dbname1"
   pages: any;
   tokens: TokenModel[];
+  counter = 0;
+  // interval;
 
   constructor(
     private WorkerService: WorkerService,
@@ -24,11 +26,31 @@ export class PouchDbInteractionComponent implements OnInit {
 
   }
 
+  startCounter() {
+    // this.interval = setInterval(() => {
+      this.counter++;
+    // },1000)
+  }
+
+  stopCounter() {
+    // clearInterval(this.interval)
+  }
+
+  clearCounter(){
+    this.counter = 0;
+  }
+
   setPages(dbId: string) {
     this.getHttpService.getPagesData().subscribe(res => {
       console.log('pages', res);
-      this.WorkerService.addBulkDocs(`doc-images-${dbId}`, res);
+      this.WorkerService.addBulkDocs(`doc-images-${dbId}`, res).then(r => {
+        console.log("data added", r);
+        // this.pouchFindService.createIndex(`doc-images-${dbId}`, ['pageNumber']);
+      });
 
+      // this.pouchFindService.addBulkDocs(`doc-images-${dbId}`, res).then(r => {
+      //   this.pouchFindService.createIndex(`doc-images-${dbId}`, ['pageNumber']);
+      // })
     });
   }
 
@@ -36,8 +58,11 @@ export class PouchDbInteractionComponent implements OnInit {
     this.getHttpService.getTokensData().subscribe(res => {
       console.log('tokens', res);
       this.WorkerService.addBulkDocs(`doc-tokens-${dbId}`, res).then(r => {
-        this.pouchFindService.createIndex(`doc-tokens-${dbId}`, ['pageNumber']);
+        // this.pouchFindService.createIndex(`doc-tokens-${dbId}`, ['pageNumber']);
       })
+      // this.pouchFindService.addBulkDocs(`doc-tokens-${dbId}`, res).then(r => {
+      //   this.pouchFindService.createIndex(`doc-tokens-${dbId}`, ['pageNumber']);
+      // })
     });
   }
 
@@ -76,6 +101,11 @@ export class PouchDbInteractionComponent implements OnInit {
     }).catch((err) => {
       console.log(err);
     });
+    // this.pouchFindService.getAllDocIdsAndRevs(`doc-images-${this.dbId}`).then((docs: any) => {
+    //   console.log("all docs", docs);
+    // }).catch((err) => {
+    //   console.log(err);
+    // });
   };
 
   findDocsByPageNumber(dbId: string, pageNumber: string = "1") {
@@ -86,13 +116,12 @@ export class PouchDbInteractionComponent implements OnInit {
   }
 
   findDocsByPageValue(dbId: string, value: string) {
-    this.pouchFindService.createIndex(`doc-images-${dbId}`, ['value'])
-      .then(() => {
-        this.pouchFindService.findByPageValue((value))
-          .then((response: any) => {
-            console.log(response);
-          })
-      })
+    // this.pouchFindService.createIndex(`doc-images-${dbId}`, ['value'])
+    //   .then(() => {
+      this.pouchFindService.findByPageNumber(`doc-tokens-${dbId}`, parseInt(value))
+        .then((response: any) => {
+          console.log(response);
+        })
       .catch((err: any) => {
         console.log(err);
       });
