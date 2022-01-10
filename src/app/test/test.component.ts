@@ -132,13 +132,13 @@ export class TestComponent implements OnInit {
 
   find() {
     // this.createIndexes();
-    this.pouchFindService.findByPageNumber(2).then((response: any) => {
+    this.pouchFindService.findByPageNumber(this.dbName,2).then((response: any) => {
       console.log(response);
     }).catch((err: any) => {
       console.log(err);
     });
 
-    this.pouchFindService.findByPageValue().then((response: any) => {
+    this.pouchFindService.findByPageValue(this.dbName).then((response: any) => {
       console.log(response);
     }).catch((err: any) => {
       console.log(err);

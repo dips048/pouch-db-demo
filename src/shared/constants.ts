@@ -4,6 +4,6 @@ export class CONSTANTS {
     }
 
     DOC_IMAGE =  "DOC_IMAGE"
-
+    DOC_TOKEN =  "DOC_TOKEN"
 
 }

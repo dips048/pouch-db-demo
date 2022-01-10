@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { CONSTANTS } from 'src/shared/constants';
 import { GetHttpService, WorkerService } from '../../services';
 import { PouchFindService } from '../../services';
 import { TokenModel } from '../../tokens.model';
@@ -34,7 +35,9 @@ export class PouchDbInteractionComponent implements OnInit {
   setTokens(dbId: string) {
     this.getHttpService.getTokensData().subscribe(res => {
       console.log('tokens', res);
-      this.WorkerService.addBulkDocs(`doc-tokens-${dbId}`, res);;
+      this.WorkerService.addBulkDocs(`doc-tokens-${dbId}`, res).then(r => {
+        this.pouchFindService.createIndex(`doc-tokens-${dbId}`, ['pageNumber']);
+      })
     });
   }
 
@@ -67,18 +70,6 @@ export class PouchDbInteractionComponent implements OnInit {
     this.pouchFindService.destroyDatabase(`doc-tokens-${dbId}`);
   }
 
-  addDocs(dbName: string, data: any[]) {
-    // this.WorkerService.createDB(dbName);
-
-    this.pouchFindService.findByPageValue()
-
-    this.WorkerService.addBulkDocs(dbName, data).then((docs: any) => {
-      console.log('bulk of documents added', docs);
-    }).catch((err: any) => {
-      console.log(err);
-    });
-  }
-
   getAllDocIdsAndRevs() {
     this.WorkerService.getAllDocIdsAndRevs().then((docs: any) => {
       console.log("all docs", docs);
@@ -88,23 +79,23 @@ export class PouchDbInteractionComponent implements OnInit {
   };
 
   findDocsByPageNumber(dbId: string, pageNumber: string = "1") {
-    this.pouchFindService.createIndex(`doc-tokens-${dbId}`, ['pageNumber']).then(() => {
-      this.pouchFindService.findByPageNumber(parseInt(pageNumber)).then((response: any) => {
+    this.pouchFindService.findByPageNumber(`doc-tokens-${dbId}`, parseInt(pageNumber))
+      .then((response: any) => {
         console.log(response);
       })
-    }).catch((err: any) => {
-      console.log(err);
-    });
   }
 
   findDocsByPageValue(dbId: string, value: string) {
-    this.pouchFindService.createIndex(`doc-images-${dbId}`, ['value']).then(() => {
-      this.pouchFindService.findByPageValue((value)).then((response: any) => {
-        console.log(response);
+    this.pouchFindService.createIndex(`doc-images-${dbId}`, ['value'])
+      .then(() => {
+        this.pouchFindService.findByPageValue((value))
+          .then((response: any) => {
+            console.log(response);
+          })
       })
-    }).catch((err: any) => {
-      console.log(err);
-    });
+      .catch((err: any) => {
+        console.log(err);
+      });
   };
 
 
