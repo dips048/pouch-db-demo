@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { PouchSizeService } from 'src/app/services/pouch-size.service';
 import { CONSTANTS } from 'src/shared/constants';
 import { GetHttpService, WorkerService } from '../../services';
 import { PouchFindService } from '../../services';
@@ -20,17 +19,12 @@ export class PouchDbInteractionComponent implements OnInit {
   constructor(
     private WorkerService: WorkerService,
     private pouchFindService: PouchFindService,
-    private pouchSizeService: PouchSizeService,
     private getHttpService: GetHttpService
   ) { }
 
   ngOnInit(): void {
-    this.pouchSizeService.createDB();
   }
 
-  databaseSize() {
-    this.pouchSizeService.createDB();
-  }
 
   usage() {
     navigator.storage.estimate().then(r => {
@@ -55,12 +49,24 @@ export class PouchDbInteractionComponent implements OnInit {
     this.counter = 0;
   }
 
+  createIndex() {
+    console.time('CI');
+    this.pouchFindService.createIndex(`doc-images-${this.dbId}`, ['pageNumber']).then(r => {
+      console.timeEnd('CI');
+    });
+  }
+
   setPages(dbId: string) {
     this.getHttpService.getPagesData().subscribe(res => {
       console.log('pages', res);
+      console.time("addBulkDocs");
       this.WorkerService.addBulkDocs(`doc-images-${dbId}`, res).then(r => {
+        console.timeEnd("addBulkDocs");
         console.log("data added", r);
-        this.pouchFindService.createIndex(`doc-images-${dbId}`, ['pageNumber']);
+        console.time('createIndex');
+        this.pouchFindService.createIndex(`doc-images-${dbId}`, ['pageNumber']).then(r => {
+          console.timeEnd('createIndex');
+        });
       });
 
       // this.pouchFindService.addBulkDocs(`doc-images-${dbId}`, res).then(r => {
@@ -111,7 +117,9 @@ export class PouchDbInteractionComponent implements OnInit {
   }
 
   getAllDocIdsAndRevs() {
+    console.time('getAllDoc');
     this.WorkerService.getAllDocIdsAndRevs().then((docs: any) => {
+      console.timeEnd('getAllDoc');
       console.log("all docs", docs);
     }).catch((err) => {
       console.log(err);
@@ -124,9 +132,11 @@ export class PouchDbInteractionComponent implements OnInit {
   };
 
   findDocsByPageNumber(dbId: string, pageNumber: string = "1") {
+    console.time('findByPage Number');
     this.pouchFindService.findByPageNumber(`doc-tokens-${dbId}`, parseInt(pageNumber))
       .then((response: any) => {
         console.log(response);
+        console.timeEnd('findByPage Number');
       })
   }
 
