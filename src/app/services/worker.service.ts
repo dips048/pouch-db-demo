@@ -1,9 +1,13 @@
 import { Injectable } from '@angular/core';
-import PouchDB from 'pouchdb';
+import PouchDB from 'pouchdb-browser';
+import * as pouchdbSize from 'pouchdb-size';
 // for this we have to add  "noImplicitAny": false to tsconfig file
 import WorkerPouch from 'worker-pouch';
 import { PouchFindService } from '.';
+
 (<any>PouchDB).adapter('worker', WorkerPouch)
+PouchDB.plugin(pouchdbSize);
+
 
 @Injectable({
   providedIn: 'root'
@@ -21,22 +25,25 @@ export class WorkerService {
 
   private createDB(dbName: string = 'example') {
     this.db = new PouchDB(dbName, {adapter: 'worker'});
+    this.db.info().then(r => console.log(r));
   }
 
   addBulkDocs(dbName:string, data: any[]){
     this.createDB(dbName);
-    return this.pouchFindService.createIndex(dbName, ['pageNumber']).then(() => {
-      return this.pouchFindService.findByPageNumber(dbName, parseInt(data[0].pageNumber)).then(r => {
-        if(r.docs.length){
-          throw new Error('data already exist');
-        }
-        return this.db.bulkDocs(data);
-      })
-    })
+    return this.db.bulkDocs(data);
+    // return this.pouchFindService.createIndex(dbName, ['pageNumber']).then(() => {
+    //   return this.pouchFindService.findByPageNumber(dbName, parseInt(data[0].pageNumber)).then(r => {
+    //     if(r.docs.length){
+    //       throw new Error('data already exist');
+    //     }
+    //     return this.db.bulkDocs(data);
+    //   })
+    // })
 
   };
 
-  addSingleDoc(data: any): Promise<PouchDB.Core.Response> {
+  addSingleDoc(dbName:string, data: any): Promise<PouchDB.Core.Response> {
+    this.createDB(dbName);
     return this.db.put(data);
   };
 
