@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
 import pouchFind from 'pouchdb-find';
-import PouchDB from 'pouchdb-browser';
+import * as pouchdbSize from 'pouchdb-size';
+import PouchDB from 'pouchdb';
 
+PouchDB.plugin(pouchdbSize);
 PouchDB.plugin(pouchFind);
 
 @Injectable({
@@ -9,7 +11,6 @@ PouchDB.plugin(pouchFind);
 })
 export class PouchFindService {
   dbMaps = new Map();
-
 
   constructor() {
   }
@@ -24,6 +25,8 @@ export class PouchFindService {
       });
       this.dbMaps.set(dbName, db)
     }
+    db.installSizeWrapper();
+    db.info().then(r => console.log(r));
     return db
 
   }

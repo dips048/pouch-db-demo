@@ -15,6 +15,6 @@ export class GetHttpService {
   }
 
   getPagesData(): Observable<any> {
-    return this.http.get('/assets/pages.json');
+    return this.http.get('/assets/pages-id.json');
   }
 }

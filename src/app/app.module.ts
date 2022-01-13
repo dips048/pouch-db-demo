@@ -2,21 +2,19 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppComponent } from './app.component';
-import { TestComponent } from './test/test.component';
 import { HttpClientModule } from '@angular/common/http';
-import { PouchDbInteractionComponent } from './components/pouch-db-interaction/pouch-db-interaction.component';
 import { FormsModule } from '@angular/forms';
+import { components } from './components';
 
 @NgModule({
   declarations: [
     AppComponent,
-    TestComponent,
-    PouchDbInteractionComponent,
+    ...components,
   ],
   imports: [
     BrowserModule,
     FormsModule,
-    HttpClientModule
+    HttpClientModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

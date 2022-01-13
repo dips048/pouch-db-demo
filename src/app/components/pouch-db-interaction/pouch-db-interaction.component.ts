@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { PouchSizeService } from 'src/app/services/pouch-size.service';
 import { CONSTANTS } from 'src/shared/constants';
 import { GetHttpService, WorkerService } from '../../services';
 import { PouchFindService } from '../../services';
@@ -19,11 +20,25 @@ export class PouchDbInteractionComponent implements OnInit {
   constructor(
     private WorkerService: WorkerService,
     private pouchFindService: PouchFindService,
+    private pouchSizeService: PouchSizeService,
     private getHttpService: GetHttpService
   ) { }
 
   ngOnInit(): void {
+    this.pouchSizeService.createDB();
+  }
 
+  databaseSize() {
+    this.pouchSizeService.createDB();
+  }
+
+  usage() {
+    navigator.storage.estimate().then(r => {
+      const usage = Math.round(((r.usage/1048576)*100))/100;
+      const quota = Math.round(((r.quota/1048576)*100))/100;
+      console.log('quata',quota + "mb");
+      console.log('usage',usage + "mb");
+    })
   }
 
   startCounter() {
@@ -45,7 +60,7 @@ export class PouchDbInteractionComponent implements OnInit {
       console.log('pages', res);
       this.WorkerService.addBulkDocs(`doc-images-${dbId}`, res).then(r => {
         console.log("data added", r);
-        // this.pouchFindService.createIndex(`doc-images-${dbId}`, ['pageNumber']);
+        this.pouchFindService.createIndex(`doc-images-${dbId}`, ['pageNumber']);
       });
 
       // this.pouchFindService.addBulkDocs(`doc-images-${dbId}`, res).then(r => {
@@ -58,7 +73,7 @@ export class PouchDbInteractionComponent implements OnInit {
     this.getHttpService.getTokensData().subscribe(res => {
       console.log('tokens', res);
       this.WorkerService.addBulkDocs(`doc-tokens-${dbId}`, res).then(r => {
-        // this.pouchFindService.createIndex(`doc-tokens-${dbId}`, ['pageNumber']);
+        this.pouchFindService.createIndex(`doc-tokens-${dbId}`, ['pageNumber']);
       })
       // this.pouchFindService.addBulkDocs(`doc-tokens-${dbId}`, res).then(r => {
       //   this.pouchFindService.createIndex(`doc-tokens-${dbId}`, ['pageNumber']);
@@ -127,14 +142,16 @@ export class PouchDbInteractionComponent implements OnInit {
       });
   };
 
-
-  // addDoc() {
-  //   this.WorkerService.addSingleDoc(this.demoData).then((doc: any) => {
-  //     console.log('document added',doc);
-  //   }).catch((err: any) => {
-  //     console.log(err);
-  //   });
-  // }
+  addsingleImageDoc() {
+    this.getHttpService.getPagesData().subscribe(res => {
+      console.log("res", res[0]);
+      this.WorkerService.addSingleDoc(`doc-images-${this.dbId}`,res[0]).then((doc: any) => {
+        console.log('document added',doc);
+      }).catch((err: any) => {
+        console.log(err);
+      });
+    })
+  }
 
   // getDoc() {
   //   this.WorkerService.getSingleDoc("job_003").then((doc: any) => {
