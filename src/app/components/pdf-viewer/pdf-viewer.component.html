@@ -1,0 +1,20 @@
+<h2>PDF Viewer</h2>
+
+<div>
+  <input (change)="onFileSelected()" type="file" id="file">
+  <button (click)="nextPage()">Next page</button>
+</div>
+
+<div class="pdf-container">
+  <pdf-viewer *ngIf="pdfSrc"
+              [src]="pdfSrc"
+              [show-all]="false"
+              [(page)]="pageVariable"
+              [render-text]="true"
+              [original-size]="false"
+              (after-load-complete)="afterLoadComplete($event)"
+              (page-rendered)="pageRendered($event)"
+              (text-layer-rendered)="textLayerRendered($event)"
+              style="display: block; border: 1px solid red; height:100vh;"
+  ></pdf-viewer>
+</div>
