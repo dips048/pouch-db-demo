@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { LogPublishersService } from '.';
+import { AppSettingsService, LogPublishersService } from '.';
 import { LogLevel } from '../shared/enums';
 import { LogEntry, LogPublisher } from '../shared/models';
 
@@ -14,8 +14,10 @@ export class LogService {
 
   constructor(
     private publishersService: LogPublishersService,
+    private appSettingService: AppSettingsService
     ) {
     this.publishers = this.publishersService.publishers;
+    this.appSettingService.getSettings().subscribe(setting => this.level = setting.logLevel);
   }
 
   debug(msg: string, ...optionalParams: any[]) {
