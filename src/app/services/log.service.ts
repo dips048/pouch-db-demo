@@ -1,7 +1,11 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { AppSettingsService, LogPublishersService } from '.';
+import { Observable } from 'rxjs';
+import { AppSettingsService } from '.';
 import { LogLevel } from '../shared/enums';
-import { LogEntry, LogPublisher } from '../shared/models';
+import { LogConsole, LogEntry, LogLocalStorage, LogPublisher, LogPublisherConfig } from '../shared/models';
+
+const PUBLISHERS_FILE = 'assets/log-publishers.json';
 
 @Injectable({
   providedIn: 'root'
@@ -10,16 +14,40 @@ export class LogService {
 
   level: LogLevel = LogLevel.All;
   logWithDate: boolean = true;
-  publishers: LogPublisher[];
+  publishers: LogPublisher[] = [];
 
   constructor(
-    private publishersService: LogPublishersService,
+    private http: HttpClient,
+    // private publishersService: LogPublishersService,
     private appSettingService: AppSettingsService
-    ) {
-    this.publishers = this.publishersService.publishers;
-    this.appSettingService.getSettings().subscribe(setting => this.level = setting.logLevel);
+  ) {
+      this.buildPublishers();
+      // this.publishers = this.publishersService.publishers;
+      this.appSettingService.getSettings().subscribe(setting => this.level = setting.logLevel);
   }
 
+  buildPublishers(): void {
+    let logPub: LogPublisher;
+    this.getLoggers().subscribe(response => {
+      for (const pub of response.filter(p => p.isActive)) {
+        switch (pub.loggerName.toLowerCase()) {
+          case 'console':
+            logPub = new LogConsole();
+            break;
+          case 'localstorage':
+            logPub = new LogLocalStorage();
+            break;
+        }
+        // Set location, if any, of the logging
+        logPub.location = pub.loggerLocation;
+        this.publishers.push(logPub);
+      }
+    });
+  }
+
+  getLoggers(): Observable<LogPublisherConfig[]> {
+    return this.http.get<LogPublisherConfig[]>(PUBLISHERS_FILE);
+  }
   debug(msg: string, ...optionalParams: any[]) {
     this.writeToLog(msg, LogLevel.Debug, optionalParams);
   }
@@ -72,4 +100,5 @@ export class LogService {
       }
     }
   }
+
 }

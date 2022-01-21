@@ -6,6 +6,8 @@ import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { components } from './components';
 import { PdfViewerModule } from 'ng2-pdf-viewer';
+import { AppRoutingModule } from './app-routing.module';
+import { AngularLoggerModule } from '@dips048/angular-logger';
 
 @NgModule({
   declarations: [
@@ -14,9 +16,11 @@ import { PdfViewerModule } from 'ng2-pdf-viewer';
   ],
   imports: [
     BrowserModule,
+    AppRoutingModule,
     FormsModule,
     HttpClientModule,
-    PdfViewerModule
+    PdfViewerModule,
+    AngularLoggerModule.forRoot({level: 2})
   ],
   providers: [],
   bootstrap: [AppComponent]

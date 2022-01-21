@@ -53,3 +53,10 @@ export class LogLocalStorage extends LogPublisher {
     return of(true);
   }
 }
+
+
+export class LogPublisherConfig {
+  loggerName: string;
+  loggerLocation: string;
+  isActive: boolean;
+}

@@ -3,6 +3,29 @@
 
 <app-pouch-db-interaction></app-pouch-db-interaction> -->
 
-<app-log-test></app-log-test>
+<lib-angular-logger></lib-angular-logger>
+<nav class="navbar navbar-fixed navbar-inverse" role="navigation">
+  <div class="container">
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="#" routerLink="/pouch-db-int">Pouch Db</a>
+      </li>
+      <li>
+        <a href="#" routerLink="/pdf-viewer">PDF Viewer</a>
+      </li>
+      <li>
+        <a href="#" routerLink="/log-test">Log Test</a>
+      </li>
+      <li>
+        <a href="#" routerLink="/test">Loggging Test</a>
+      </li>
+      <li>
+        <a href="#" routerLink="/setting">Setting</a>
+      </li>
+    </ul>
+  </div>
+</nav>
 
-<app-settings></app-settings>
+<div class="container">
+  <router-outlet></router-outlet>
+</div>

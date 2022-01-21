@@ -1,14 +1,13 @@
 import { Component, OnDestroy } from '@angular/core';
-import { Product } from '../../shared/models';
 import { AngularLoggerService } from '@dips048/angular-logger';
+import { Product } from 'src/app/shared/models';
 
 @Component({
-  selector: 'app-log-test',
-  templateUrl: './log-test.component.html',
-  styleUrls: ['./log-test.component.scss']
+  selector: 'app-test',
+  templateUrl: './test.component.html',
+  styleUrls: ['./test.component.scss'],
 })
-export class LogTestComponent implements OnDestroy {
-
+export class TestComponent implements OnDestroy{
   logEntries;
 
   constructor(private logger: AngularLoggerService) {
@@ -44,6 +43,7 @@ export class LogTestComponent implements OnDestroy {
 
   getLocalStorage(): void {
     let tmp = this.logger.publishers.find(p => p.constructor.name === "LogLocalStorage");
+    console.log(tmp)
     if (tmp != null) {
       this.logger.getAll(this.constructor.name).subscribe(response => this.logEntries = response)
       // let local = tmp as unknown as LogLocalStorage;
@@ -52,8 +52,9 @@ export class LogTestComponent implements OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if(this.logger.publishers && this.logger.publishers.length) {
+    if(this.logger.publishers[1]) {
       this.logger.publishers[1].location =  'logging';
     }
   }
+
 }
