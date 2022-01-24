@@ -1,3 +1,4 @@
+import { DashboardComponent } from "./dashboard/dashboard.component";
 import { LogTestComponent } from "./log-test/log-test.component";
 import { PdfViewerComponent } from "./pdf-viewer/pdf-viewer.component";
 import { PouchDbInteractionComponent } from "./pouch-db-interaction/pouch-db-interaction.component";
@@ -9,5 +10,6 @@ export const components = [
   PdfViewerComponent,
   LogTestComponent,
   SettingsComponent,
-  TestComponent
+  TestComponent,
+  DashboardComponent
 ]
