@@ -1,29 +1,9 @@
-import { ModuleWithProviders, NgModule } from '@angular/core';
-import { AngularLoggerComponent } from './angular-logger.component';
-import { LoggerConfig } from './logger.config';
-
+import { NgModule } from '@angular/core';
 
 
 @NgModule({
-  declarations: [
-    AngularLoggerComponent
-  ],
-  imports: [
-  ],
-  exports: [
-    AngularLoggerComponent,
-  ],
+  declarations: [],
+  imports: [],
+  exports: [],
 })
-export class AngularLoggerModule {
-  public static forRoot(configuration: Partial<LoggerConfig>): ModuleWithProviders<AngularLoggerModule> {
-    return {
-      ngModule: AngularLoggerModule,
-      providers: [
-        {
-          provide: LoggerConfig,
-          useValue: configuration,
-        }
-      ]
-    }
-  }
- }
+export class AngularLoggerModule { }

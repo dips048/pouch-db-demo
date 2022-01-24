@@ -1,11 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { LogLevel } from '.';
 import { LogEntry } from './log-entry';
-import { LogLevel } from './log-level';
-import { LogConsole, LogLocalStorage, LogPublisher } from './log-publishers';
-import { LoggerConfig } from './logger.config';
 
-const PUBLISHERS_FILE = 'assets/log-publishers.json';
 
 @Injectable({
   providedIn: 'root'
@@ -14,50 +10,82 @@ export class AngularLoggerService {
 
   level: LogLevel = LogLevel.All;
   logWithDate: boolean = true;
-  publishers: LogPublisher[] = [];
+  componentName: string = 'default';
 
-  constructor(
-    private loggerConfig: LoggerConfig,
-  ) {
-      this.level = loggerConfig.level;
-      this.buildPublishers();
+  constructor() {
+    this.changeLogLevel(this.componentName, LogLevel.All);
   }
 
-
-  buildPublishers(): void {
-    // Create an instance of the LogConsole class
-    this.publishers.push(new LogConsole());
-    // Create an instance of the LogLocalStorage class
-    this.publishers.push(new LogLocalStorage());
-  }
-
-  debug(msg: string, ...optionalParams: any[]) {
+  debug(componentName: string, msg: string, ...optionalParams: any[]) {
+    this.componentName = componentName;
     this.writeToLog(msg, LogLevel.Debug, optionalParams);
   }
 
-  info(msg: string, ...optionalParams: any[]) {
+  info(componentName: string, msg: string, ...optionalParams: any[]) {
+    this.componentName = componentName;
     this.writeToLog(msg, LogLevel.Info, optionalParams);
   }
 
-  warn(msg: string, ...optionalParams: any[]) {
+  warn(componentName: string, msg: string, ...optionalParams: any[]) {
+    this.componentName = componentName;
     this.writeToLog(msg, LogLevel.Warn, optionalParams);
   }
 
-  error(msg: string, ...optionalParams: any[]) {
+  error(componentName: string, msg: string, ...optionalParams: any[]) {
+    this.componentName = componentName;
     this.writeToLog(msg, LogLevel.Error, optionalParams);
   }
 
-  fatal(msg: string, ...optionalParams: any[]) {
+  fatal(componentName: string, msg: string, ...optionalParams: any[]) {
+    this.componentName = componentName;
     this.writeToLog(msg, LogLevel.Fatal, optionalParams);
   }
 
-  log(msg: any, ...optionalParams: any[]) {
+  log(componentName: string, msg: any, ...optionalParams: any[]) {
+    this.componentName = componentName;
     this.writeToLog(msg, LogLevel.All, optionalParams);
   }
 
-  clear() : void {
-    for(let logger of this.publishers) {
-      logger.clear();
+  clear() {
+    console.clear();
+  }
+
+  registerComponent(componentName: string, logLevel: LogLevel = LogLevel.Off) {
+    this.componentName = componentName;
+    try {
+      let logConfig = JSON.parse(localStorage.getItem('logConfig')) || [];
+      if(logConfig[`${this.componentName}`]) { return; }
+      logConfig = {...logConfig, [`${this.componentName}`]: logLevel};
+      localStorage.setItem('logConfig', JSON.stringify(logConfig));
+    }
+    catch(ex){
+      console.log(ex);
+    }
+  }
+
+  changeLogLevel(componentName: string, logLevel: LogLevel) {
+    this.componentName = componentName;
+    try {
+      let logConfig = JSON.parse(localStorage.getItem('logConfig')) || [];
+      logConfig = {...logConfig, [`${this.componentName}`]: logLevel};
+      localStorage.setItem('logConfig', JSON.stringify(logConfig));
+    }
+    catch(ex){
+      console.log(ex);
+    }
+  }
+
+  deleteLogLevel(): void {
+    localStorage.removeItem('logConfig');
+  }
+
+  private getLogLevel(): any {
+    let logConfig = JSON.parse(localStorage.getItem('logConfig'));
+    if (logConfig && logConfig[`${this.componentName}`]) {
+      return logConfig[`${this.componentName}`];
+    }
+    else {
+      return this.level;
     }
   }
 
@@ -72,40 +100,18 @@ export class AngularLoggerService {
 
   private writeToLog(msg: string, level: LogLevel, params: any[]) {
     if(this.shouldLog(level)) {
-      let entry: LogEntry = new LogEntry();
-
-      entry.message = msg;
-      entry.level = level;
-      entry.extraInfo = params;
-      entry.logWithDate = this.logWithDate;
-
-      for (let logger of this.publishers) {
-        logger.log(entry).subscribe(response => console.log(response));
-      }
+      let entry: LogEntry = new LogEntry(new Date(), msg, level, params, this.logWithDate);
+      console.log(entry.buildLogString());
+      // let values: LogEntry[];
+      // try {
+      //   values = JSON.parse(localStorage.getItem(this.componentName)) || [];
+      //   values.push(entry);
+      //   localStorage.setItem(this.componentName, JSON.stringify(values));
+      // }
+      // catch(ex){
+      //   console.log(ex);
+      // }
     }
   }
 
-  getLogLevel(): LogLevel {
-    let logLevel = localStorage.getItem('logLevel');
-    if (logLevel) {
-      return JSON.parse(logLevel).level;
-    }
-    else {
-      this.saveLogLevel({level: this.loggerConfig.level})
-      return this.loggerConfig.level;
-    }
-  }
-
-  saveLogLevel(logLevel) {
-    localStorage.setItem('logLevel', JSON.stringify(logLevel));
-  }
-
-  deleteLogLevel(): void {
-    localStorage.removeItem('logLevel');
-  }
-
-  getAll(location = 'logging'): Observable<LogEntry[]> {
-    const logLocalStorage = new LogLocalStorage();
-    return logLocalStorage.getAll(location);
-  }
 }

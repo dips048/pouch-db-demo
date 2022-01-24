@@ -12,18 +12,16 @@ export class LogTestComponent implements OnDestroy {
   logEntries;
 
   constructor(private logger: AngularLoggerService) {
-    if(this.logger.publishers && this.logger.publishers.length) {
-      this.logger.publishers[1].location = this.constructor.name;
-    }
+    this.logger.registerComponent(this.constructor.name);
   }
 
   testLog() {
-    this.logger.log('test log');
-    this.logger.warn('warning');
-    this.logger.debug('debug');
-    this.logger.error('error');
-    this.logger.info('info');
-    this.logger.fatal('fatal');
+    this.logger.log(this.constructor.name, 'test log');
+    this.logger.warn(this.constructor.name, 'warning');
+    this.logger.debug(this.constructor.name, 'debug');
+    this.logger.error(this.constructor.name, 'error');
+    this.logger.info(this.constructor.name, 'info');
+    this.logger.fatal(this.constructor.name, 'fatal');
   }
 
   clearLog(): void {
@@ -39,21 +37,21 @@ export class LogTestComponent implements OnDestroy {
     // product.price = 10;
     // product.url = "www.fairwaytech.com";
 
-    this.logger.log("This is a product object", product);
+    this.logger.log(this.constructor.name,"This is a product object", product);
   }
 
   getLocalStorage(): void {
-    let tmp = this.logger.publishers.find(p => p.constructor.name === "LogLocalStorage");
-    if (tmp != null) {
-      this.logger.getAll(this.constructor.name).subscribe(response => this.logEntries = response)
-      // let local = tmp as unknown as LogLocalStorage;
-      // local.getAll().subscribe(response => this.logEntries = response);
-    }
+    // let tmp = this.logger.publishers.find(p => p.constructor.name === "LogLocalStorage");
+    // if (tmp != null) {
+    //   this.logger.getAll(this.constructor.name).subscribe(response => this.logEntries = response)
+    //   // let local = tmp as unknown as LogLocalStorage;
+    //   // local.getAll().subscribe(response => this.logEntries = response);
+    // }
   }
 
   ngOnDestroy(): void {
-    if(this.logger.publishers && this.logger.publishers.length) {
-      this.logger.publishers[1].location =  'logging';
-    }
+    // if(this.logger.publishers && this.logger.publishers.length) {
+    //   this.logger.publishers[1].location =  'logging';
+    // }
   }
 }

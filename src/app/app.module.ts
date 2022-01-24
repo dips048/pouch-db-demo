@@ -20,7 +20,7 @@ import { AngularLoggerModule } from '@dips048/angular-logger';
     FormsModule,
     HttpClientModule,
     PdfViewerModule,
-    AngularLoggerModule.forRoot({level: 2})
+    AngularLoggerModule
   ],
   providers: [],
   bootstrap: [AppComponent]
