@@ -46,6 +46,17 @@ export class AngularLoggerService {
     this.writeToLog(msg, LogLevel.All, optionalParams);
   }
 
+  stopTimer(componentName: string, label: any, ...optionalParams: any[]) {
+    this.componentName = componentName;
+    this.writeToLog(label, LogLevel.Diagnostic, optionalParams);
+  }
+
+  startTimer(label: any) {
+    if(this.level !== LogLevel.Off && LogLevel.Diagnostic >= this.level) {
+      console.time(label);
+    }
+  }
+
   clear() {
     console.clear();
   }
@@ -75,8 +86,17 @@ export class AngularLoggerService {
     }
   }
 
-  deleteLogLevel(): void {
-    localStorage.removeItem('logConfig');
+  deleteLogLevel(componentName: string): void {
+    this.componentName = componentName;
+    // localStorage.removeItem('logConfig');
+    try {
+      let logConfig = JSON.parse(localStorage.getItem('logConfig')) || [];
+      logConfig = {...logConfig, [`${this.componentName}`]: null};
+      localStorage.setItem('logConfig', JSON.stringify(logConfig));
+    }
+    catch(ex){
+      console.log(ex);
+    }
   }
 
   private getLogLevel(): any {
@@ -101,16 +121,11 @@ export class AngularLoggerService {
   private writeToLog(msg: string, level: LogLevel, params: any[]) {
     if(this.shouldLog(level)) {
       let entry: LogEntry = new LogEntry(new Date(), msg, level, params, this.logWithDate);
-      console.log(entry.buildLogString());
-      // let values: LogEntry[];
-      // try {
-      //   values = JSON.parse(localStorage.getItem(this.componentName)) || [];
-      //   values.push(entry);
-      //   localStorage.setItem(this.componentName, JSON.stringify(values));
-      // }
-      // catch(ex){
-      //   console.log(ex);
-      // }
+      if(level === LogLevel.Diagnostic) {
+        console.timeEnd(msg);
+      } else {
+        console.log(entry.buildLogString());
+      }
     }
   }
 

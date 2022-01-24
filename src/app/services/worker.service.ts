@@ -19,13 +19,13 @@ export class WorkerService {
     private pouchFindService: PouchFindService
   ) {
     PouchDB.on("created", (dbname: string) => {
-      console.log("Database: '" + dbname + "' opened successfully.");
+      // console.log("Database: '" + dbname + "' opened successfully.");
     });
   }
 
   private createDB(dbName: string = 'example') {
     this.db = new PouchDB(dbName, {adapter: 'worker'});
-    this.db.info().then(r => console.log(r));
+    // this.db.info().then(r => console.log(r));
   }
 
   addBulkDocs(dbName:string, data: any[]){
@@ -99,7 +99,7 @@ export class WorkerService {
     this.createDB(DBName);
     if (this.db) {
       this.db.destroy().then((response) => {
-        console.log("Database deleted.");
+        // console.log("Database deleted.");
       }).catch((err) => {
         throw new Error(err);
       });

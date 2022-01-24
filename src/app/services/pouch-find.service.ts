@@ -21,12 +21,12 @@ export class PouchFindService {
     } else {
       db = new PouchDB(dbName);
       PouchDB.on("created", (dbname: string) => {
-        console.log("Database: '" + dbname + "' opened successfully.");
+        // console.log("Database: '" + dbname + "' opened successfully.");
       });
       this.dbMaps.set(dbName, db)
     }
     db.installSizeWrapper();
-    db.info().then(r => console.log(r));
+    // db.info().then(r => console.log(r));
     return db
 
   }
@@ -42,14 +42,14 @@ export class PouchFindService {
       });
     }
     else {
-      console.log("Please open the database first.");
+      // console.log("Please open the database first.");
       throw new Error("Please open the database first.");
     }
   };
 
   createIndex(dbName: string, index: Array<string>): Promise<PouchDB.Find.CreateIndexResponse<{}>> {
     const db = this.createDB(dbName);
-    console.log(db);
+    // console.log(db);
     return db.createIndex({
       index: {
         fields: index
