@@ -47,7 +47,8 @@ export class WorkerService {
     return this.db.put(data);
   };
 
-  getAllDocIdsAndRevs(): Promise<any> {
+  getAllDocIdsAndRevs(dbName:string = 'example'): Promise<any> {
+    this.createDB(dbName);
     return this.db.allDocs();
   };
 

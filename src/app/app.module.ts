@@ -8,11 +8,15 @@ import { components } from './components';
 import { PdfViewerModule } from 'ng2-pdf-viewer';
 import { AppRoutingModule } from './app-routing.module';
 import { AngularLoggerModule } from '@dips048/angular-logger';
+import { sharedComponents } from './shared/components';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatCardModule } from '@angular/material/card';
 
 @NgModule({
   declarations: [
     AppComponent,
     ...components,
+    ...sharedComponents,
   ],
   imports: [
     BrowserModule,
@@ -20,7 +24,9 @@ import { AngularLoggerModule } from '@dips048/angular-logger';
     FormsModule,
     HttpClientModule,
     PdfViewerModule,
-    AngularLoggerModule
+    AngularLoggerModule,
+    BrowserAnimationsModule,
+    MatCardModule
   ],
   providers: [],
   bootstrap: [AppComponent]

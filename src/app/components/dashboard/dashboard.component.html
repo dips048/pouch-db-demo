@@ -1,1 +1,15 @@
-<p>dashboard works!</p>
+<div>
+  <label for="totalPages">Total Pages</label>
+  <input type="number" name="totalPages" [value]="300" #pageNumber>
+  <button (click)="addDataSetDoc(pageNumber.value)">Add DataSet</button>
+</div>
+
+<div>
+  <h3>Data Sets</h3>
+  <ng-container *ngIf="dataSetIds">
+    <div *ngFor="let item of dataSetIds">
+        <app-data-set-card [dataSetId]="item.id"></app-data-set-card>
+    </div>
+  </ng-container>
+</div>
+
