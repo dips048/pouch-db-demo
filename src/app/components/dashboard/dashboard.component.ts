@@ -8,7 +8,7 @@ import { WorkerService } from 'src/app/services';
 })
 export class DashboardComponent implements OnInit {
 
-  dataSetIds: any[];
+  dataSetRows: any[];
 
   constructor(
     private workerService: WorkerService
@@ -35,12 +35,12 @@ export class DashboardComponent implements OnInit {
   }
 
   addDataSetDoc(totalPages: string) {
-    this.workerService.addSingleDoc('data-set',{_id: this.generateUUID(), totalPages: parseInt(totalPages)}).then(r => console.log(r))
+    this.workerService.addDBNameToDataSetDb(`doc-images-${this.generateUUID()}`, parseInt(totalPages)).then(r => console.log(r))
     .catch(e => console.log(e));
   }
 
   getAllDataset() {
-    this.workerService.getAllDocIdsAndRevs('data-set').then(r => this.dataSetIds = r.rows)
+    this.workerService.getAllDocIdsAndRevs('data-set').then(r => this.dataSetRows = r.rows)
     .catch(e => console.log(e))
   }
 }

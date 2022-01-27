@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import PouchDb from 'pouchdb-browser';
 import PouchDB from 'pouchdb-browser';
 import * as pouchdbSize from 'pouchdb-size';
 // for this we have to add  "noImplicitAny": false to tsconfig file
@@ -14,18 +15,36 @@ PouchDB.plugin(pouchdbSize);
 })
 export class WorkerService {
   db: PouchDB.Database<{}>;
+  dataSetDb: PouchDB.Database<{}>;
 
   constructor(
-    private pouchFindService: PouchFindService
   ) {
     PouchDB.on("created", (dbname: string) => {
       // console.log("Database: '" + dbname + "' opened successfully.");
     });
+    // this.createDataSetDb();
   }
 
   private createDB(dbName: string = 'example') {
     this.db = new PouchDB(dbName, {adapter: 'worker'});
+    // if (dbName.split('-')[1] === 'images') {
+    //   this.addDBNameToDataSetDb(dbName).then(r => {
+    //     // {console.log(r)}
+    //   })
+    //   .catch(e => {
+    //     // console.log(e)
+    //   });
+    // }
     // this.db.info().then(r => console.log(r));
+  }
+
+  private createDataSetDb() {
+    this.dataSetDb = new PouchDB('data-set', {adapter: 'worker'});
+  }
+
+  addDBNameToDataSetDb(dbName: string,totalPages: number) {
+    this.createDataSetDb();
+    return this.dataSetDb.put({_id: dbName, totalPages: totalPages});
   }
 
   addBulkDocs(dbName:string, data: any[]){
@@ -49,7 +68,7 @@ export class WorkerService {
 
   getAllDocIdsAndRevs(dbName:string = 'example'): Promise<any> {
     this.createDB(dbName);
-    return this.db.allDocs();
+    return this.db.allDocs({include_docs: true});
   };
 
   countDocuments() {

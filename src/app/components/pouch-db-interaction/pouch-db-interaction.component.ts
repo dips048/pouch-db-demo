@@ -14,10 +14,11 @@ export class PouchDbInteractionComponent implements OnInit {
   pages: any;
   tokens: TokenModel[];
   counter = 0;
+  totalPages = 300;
   // interval;
 
   constructor(
-    private WorkerService: WorkerService,
+    private workerService: WorkerService,
     private pouchFindService: PouchFindService,
     private getHttpService: GetHttpService,
     private ls: AngularLoggerService
@@ -63,14 +64,16 @@ export class PouchDbInteractionComponent implements OnInit {
     this.getHttpService.getPagesData().subscribe(res => {
       // console.log('pages', res);
       // console.time("addBulkDocs");
-      this.WorkerService.addBulkDocs(`doc-images-${dbId}`, res).then(r => {
+      this.workerService.addDBNameToDataSetDb(`doc-images-${dbId}`, this.totalPages).then(r => console.log(r))
+        .catch(e => console.log(e));
+      this.workerService.addBulkDocs(`doc-images-${dbId}`, res).then(r => {
         // console.timeEnd("addBulkDocs");
-        // console.log("data added", r);
+        console.log("data added", r);
         // console.time('createIndex');
         this.pouchFindService.createIndex(`doc-images-${dbId}`, ['pageNumber']).then(r => {
           // console.timeEnd('createIndex');
-        });
-      });
+        }).catch(e => console.log(e));
+      }).catch(e => console.log(e));
 
       // this.pouchFindService.addBulkDocs(`doc-images-${dbId}`, res).then(r => {
       //   this.pouchFindService.createIndex(`doc-images-${dbId}`, ['pageNumber']);
@@ -81,9 +84,9 @@ export class PouchDbInteractionComponent implements OnInit {
   setTokens(dbId: string) {
     this.getHttpService.getTokensData().subscribe(res => {
       // console.log('tokens', res);
-      this.WorkerService.addBulkDocs(`doc-tokens-${dbId}`, res).then(r => {
-        this.pouchFindService.createIndex(`doc-tokens-${dbId}`, ['pageNumber']);
-      })
+      this.workerService.addBulkDocs(`doc-tokens-${dbId}`, res).then(r => {
+        this.pouchFindService.createIndex(`doc-tokens-${dbId}`, ['pageNumber']).then();
+      }).catch(e => console.log(e));
       // this.pouchFindService.addBulkDocs(`doc-tokens-${dbId}`, res).then(r => {
       //   this.pouchFindService.createIndex(`doc-tokens-${dbId}`, ['pageNumber']);
       // })
@@ -121,7 +124,7 @@ export class PouchDbInteractionComponent implements OnInit {
 
   getAllDocIdsAndRevs() {
     // console.time('getAllDoc');
-    this.WorkerService.getAllDocIdsAndRevs().then((docs: any) => {
+    this.workerService.getAllDocIdsAndRevs().then((docs: any) => {
       // console.timeEnd('getAllDoc');
       // console.log("all docs", docs);
     }).catch((err) => {
@@ -160,9 +163,11 @@ export class PouchDbInteractionComponent implements OnInit {
   };
 
   addsingleImageDoc() {
+    this.workerService.addDBNameToDataSetDb(`doc-images-${this.dbId}`, this.totalPages).then(r => console.log(r))
+    .catch(e => console.log(e));
     this.getHttpService.getPagesData().subscribe(res => {
       // console.log("res", res[0]);
-      this.WorkerService.addSingleDoc(`doc-images-${this.dbId}`,res[0]).then((doc: any) => {
+      this.workerService.addSingleDoc(`doc-images-${this.dbId}`,res[0]).then((doc: any) => {
         // console.log('document added',doc);
       }).catch((err: any) => {
         // console.log(err);

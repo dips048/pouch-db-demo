@@ -8,15 +8,14 @@ import { components } from './components';
 import { PdfViewerModule } from 'ng2-pdf-viewer';
 import { AppRoutingModule } from './app-routing.module';
 import { AngularLoggerModule } from '@dips048/angular-logger';
-import { sharedComponents } from './shared/components';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
 
 @NgModule({
   declarations: [
     AppComponent,
     ...components,
-    ...sharedComponents,
   ],
   imports: [
     BrowserModule,
@@ -26,7 +25,8 @@ import { MatCardModule } from '@angular/material/card';
     PdfViewerModule,
     AngularLoggerModule,
     BrowserAnimationsModule,
-    MatCardModule
+    MatCardModule,
+    MatButtonModule
   ],
   providers: [],
   bootstrap: [AppComponent]

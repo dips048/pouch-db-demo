@@ -9,8 +9,12 @@
 
 <div>
   {{dbId}} <br>  <button (click)="setTokens(dbId)">Add Tokens</button>
-  <button (click)="setPages(dbId);">Add Pages</button>
   <button (click)="getAllDocIdsAndRevs();">Get All Documents</button>
+</div>
+
+<div>
+  {{dbId}} <br> <label for="totalPages">Total Pages</label><input type="number" class="dbId" [(ngModel)]="totalPages">
+  <br><button (click)="setPages(dbId);">Add Pages</button>
 </div>
 
 <div>

@@ -6,9 +6,9 @@
 
 <div>
   <h3>Data Sets</h3>
-  <ng-container *ngIf="dataSetIds">
-    <div *ngFor="let item of dataSetIds">
-        <app-data-set-card [dataSetId]="item.id"></app-data-set-card>
+  <ng-container *ngIf="dataSetRows">
+    <div *ngFor="let rows of dataSetRows">
+      <app-data-set-card [dataSetId]="rows.id"></app-data-set-card>
     </div>
   </ng-container>
 </div>
