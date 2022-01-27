@@ -1,5 +1,6 @@
 <div>
-  <input type="text" class="dbId" [(ngModel)]="dbId">
+  <label for="dbId">Database Name</label><input type="text" class="dbId" [(ngModel)]="dbId">
+  <label for="totalPages">Total Pages</label><input type="number" class="dbId" [(ngModel)]="totalPages">
   <button (click)="generateDbId(); FindPgDb.value=dbId; FindVaDb.value = dbId">Generate Id</button>
 </div>
 
@@ -9,12 +10,8 @@
 
 <div>
   {{dbId}} <br>  <button (click)="setTokens(dbId)">Add Tokens</button>
+  <button (click)="setPages(dbId);">Add Pages</button>
   <button (click)="getAllDocIdsAndRevs();">Get All Documents</button>
-</div>
-
-<div>
-  {{dbId}} <br> <label for="totalPages">Total Pages</label><input type="number" class="dbId" [(ngModel)]="totalPages">
-  <br><button (click)="setPages(dbId);">Add Pages</button>
 </div>
 
 <div>
@@ -34,8 +31,8 @@
 <button (click)="clearCounter()">clear</button>
 <div> counter: {{counter}} </div>
 
-
-<div><button (click)="addsingleImageDoc()">Add single image record</button></div>
+<!--
+<div><button (click)="addsingleImageDoc()">Add single image record</button></div> -->
 
 <div><button (click)="createIndex()"> create Index</button></div>
 

@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { WorkerService } from 'src/app/services';
 
 @Component({
@@ -9,13 +10,23 @@ import { WorkerService } from 'src/app/services';
 export class DashboardComponent implements OnInit {
 
   dataSetRows: any[];
+  dbId: string = "dbname1";
+  totalPages = 300;
 
   constructor(
-    private workerService: WorkerService
+    private workerService: WorkerService,
+    private router: Router
     ) { }
 
   ngOnInit(): void {
     this.getAllDataset();
+    // this.workerService.dataSetDb.changes().on('complete', () => this.router.navigate(['/dashboard']).then())
+  }
+
+  generateDbId() {
+    this.dbId = this.generateUUID();
+    this.workerService.addDBNameToDataSetDb(this.dbId, this.totalPages).then(r => console.log(r))
+        .catch(e => console.log(e));
   }
 
   generateUUID() { // Public Domain/MIT
@@ -34,10 +45,10 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  addDataSetDoc(totalPages: string) {
-    this.workerService.addDBNameToDataSetDb(`doc-images-${this.generateUUID()}`, parseInt(totalPages)).then(r => console.log(r))
-    .catch(e => console.log(e));
-  }
+  // addDataSetDoc(totalPages: string) {
+  //   this.workerService.addDBNameToDataSetDb(this.dbId, parseInt(totalPages)).then(r => console.log(r))
+  //   .catch(e => console.log(e));
+  // }
 
   getAllDataset() {
     this.workerService.getAllDocIdsAndRevs('data-set').then(r => this.dataSetRows = r.rows)

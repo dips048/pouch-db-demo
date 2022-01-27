@@ -29,8 +29,8 @@ export class DataSetCardComponent implements OnInit {
     ) { }
 
   ngOnInit(): void {
-    this.workerService.getSingleDoc(this.dataSetId).then(response => {
-      // console.log(response);
+    this.workerService.getSingleDoc('data-set', this.dataSetId).then(response => {
+      console.log(response);
       this.dataSet = response;
       this.getDocuments(this.dataSetId);
     }).catch(e => console.log(e));
@@ -38,7 +38,7 @@ export class DataSetCardComponent implements OnInit {
 
   addDocuments(id: string){
     this.getHttpService.getPagesData().subscribe(pages =>
-      this.workerService.addBulkDocs(id,pages).then(r => {
+      this.workerService.addBulkDocs(`doc-images-${id}`,pages).then(r => {
         // console.log(r);
         this.getDocuments(this.dataSetId);
       }).catch(e => console.log(e))
@@ -46,7 +46,7 @@ export class DataSetCardComponent implements OnInit {
   }
 
   getDocuments(id: string) {
-    this.workerService.getAllDocIdsAndRevs(id).then(r => {
+    this.workerService.getAllDocIdsAndRevs(`doc-images-${id}`).then(r => {
       // console.log(r);
       this.addedPages = r.total_rows
     }).catch(e => console.log(e));

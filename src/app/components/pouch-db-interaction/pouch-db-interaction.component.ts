@@ -24,6 +24,8 @@ export class PouchDbInteractionComponent implements OnInit {
     private ls: AngularLoggerService
   ) {
     this.ls.registerComponent(this.constructor.name, LogLevel.Off);
+    // this.workerService.addDBNameToDataSetDb(this.dbId, this.totalPages).then(r => console.log(r))
+    //   .catch(e => console.log(e));
   }
 
   ngOnInit(): void {
@@ -64,8 +66,6 @@ export class PouchDbInteractionComponent implements OnInit {
     this.getHttpService.getPagesData().subscribe(res => {
       // console.log('pages', res);
       // console.time("addBulkDocs");
-      this.workerService.addDBNameToDataSetDb(`doc-images-${dbId}`, this.totalPages).then(r => console.log(r))
-        .catch(e => console.log(e));
       this.workerService.addBulkDocs(`doc-images-${dbId}`, res).then(r => {
         // console.timeEnd("addBulkDocs");
         console.log("data added", r);
@@ -97,6 +97,8 @@ export class PouchDbInteractionComponent implements OnInit {
     // this.WorkerService.createDB(dbName);
     // this.pouchFindService.createDB(dbName);
     this.dbId = this.generateUUID();
+    this.workerService.addDBNameToDataSetDb(this.dbId, this.totalPages).then(r => console.log(r))
+        .catch(e => console.log(e));
   }
 
   generateUUID() { // Public Domain/MIT
@@ -163,8 +165,6 @@ export class PouchDbInteractionComponent implements OnInit {
   };
 
   addsingleImageDoc() {
-    this.workerService.addDBNameToDataSetDb(`doc-images-${this.dbId}`, this.totalPages).then(r => console.log(r))
-    .catch(e => console.log(e));
     this.getHttpService.getPagesData().subscribe(res => {
       // console.log("res", res[0]);
       this.workerService.addSingleDoc(`doc-images-${this.dbId}`,res[0]).then((doc: any) => {

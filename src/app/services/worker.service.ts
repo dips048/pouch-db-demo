@@ -22,20 +22,10 @@ export class WorkerService {
     PouchDB.on("created", (dbname: string) => {
       // console.log("Database: '" + dbname + "' opened successfully.");
     });
-    // this.createDataSetDb();
   }
 
   private createDB(dbName: string = 'example') {
     this.db = new PouchDB(dbName, {adapter: 'worker'});
-    // if (dbName.split('-')[1] === 'images') {
-    //   this.addDBNameToDataSetDb(dbName).then(r => {
-    //     // {console.log(r)}
-    //   })
-    //   .catch(e => {
-    //     // console.log(e)
-    //   });
-    // }
-    // this.db.info().then(r => console.log(r));
   }
 
   private createDataSetDb() {
@@ -78,7 +68,8 @@ export class WorkerService {
     });
   }
 
-  getSingleDoc(id: string): Promise<any> {
+  getSingleDoc(dbName: string, id: string): Promise<any> {
+    this.createDB(dbName);
     return this.db.get(id);
   };
 

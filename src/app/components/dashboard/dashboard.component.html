@@ -1,7 +1,10 @@
 <div>
-  <label for="totalPages">Total Pages</label>
+  <!-- <label for="totalPages">Total Pages</label>
   <input type="number" name="totalPages" [value]="300" #pageNumber>
-  <button (click)="addDataSetDoc(pageNumber.value)">Add DataSet</button>
+  <button (click)="addDataSetDoc(pageNumber.value)">Add DataSet</button> -->
+  <label for="dbId">Database Name</label><input type="text" class="dbId" [(ngModel)]="dbId">
+  <label for="totalPages">Total Pages</label><input type="number" class="dbId" [(ngModel)]="totalPages">
+  <button (click)="generateDbId()">Generate Id</button>
 </div>
 
 <div>
