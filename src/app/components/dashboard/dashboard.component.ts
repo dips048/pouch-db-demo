@@ -1,11 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { WorkerService } from 'src/app/services';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.scss']
+  styleUrls: ['./dashboard.component.scss'],
+  // changeDetection: ChangeDetectionStrategy.Default
 })
 export class DashboardComponent implements OnInit {
 
@@ -15,7 +16,6 @@ export class DashboardComponent implements OnInit {
 
   constructor(
     private workerService: WorkerService,
-    private router: Router
     ) { }
 
   ngOnInit(): void {

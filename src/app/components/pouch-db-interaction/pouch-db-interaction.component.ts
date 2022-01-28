@@ -68,6 +68,8 @@ export class PouchDbInteractionComponent implements OnInit {
       // console.time("addBulkDocs");
       this.workerService.addBulkDocs(`doc-images-${dbId}`, res).then(r => {
         // console.timeEnd("addBulkDocs");
+        // this.workerService.addDBNameToDataSetDb(this.dbId, this.totalPages).then(r => console.log(r))
+        //   .catch(e => console.log(e));
         console.log("data added", r);
         // console.time('createIndex');
         this.pouchFindService.createIndex(`doc-images-${dbId}`, ['pageNumber']).then(r => {
