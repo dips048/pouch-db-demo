@@ -1,25 +1,10 @@
-import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
-import { GetHttpService, WorkerService } from 'src/app/services';
+import { Component, Input, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'app-data-set-card',
+  selector: 'app-ds-card',
   template: `
-    <ng-container *ngIf="dataSet">
-        <div class="row">
-          <div class="column small-3">{{dataSetId}}</div>
-          <div class="column small-1">Total Pages: {{dataSet.totalPages}}</div>
-          <!-- <div class="column small-2">completed: {{(addedPages/dataSet.totalPages)*100 | number:'2.0-2'}}%</div> -->
-          <div class="column small-4">
-            <progress-bar [progress]="((addedPages/dataSet.totalPages)*100).toString()" [color-degraded]="{'0': '#00cbcb',  '15': '#f9c3d3', '25': '#fd8c8e'}"></progress-bar>
-            <!-- <mat-progress-bar
-              class="example-margin"
-              [color]="'primary'"
-              [mode]="'determinate'"
-              [value]="(addedPages/dataSet.totalPages)*100">
-            </mat-progress-bar> -->
-          </div>
-        </div>
-        <!-- <div class="flex float-right"><progress-bar [progress]="((addedPages/dataSet.totalPages)*100).toString()" [color-degraded]="{'0': '#00cbcb',  '15': '#f9c3d3', '25': '#fd8c8e'}"></progress-bar></div> -->
+         <!-- <progress-bar [progress]="((addedPages/dataSet.totalPages)*100).toString()" [color-degraded]="{'0': '#00cbcb',  '15': '#f9c3d3', '25': '#fd8c8e'}"></progress-bar> -->
+     <!-- <div class="flex float-right"><progress-bar [progress]="((addedPages/dataSet.totalPages)*100).toString()" [color-degraded]="{'0': '#00cbcb',  '15': '#f9c3d3', '25': '#fd8c8e'}"></progress-bar></div> -->
       <!-- <mat-card>
         <mat-card-title>
           {{dataSetId}}   Total Pages: {{dataSet.totalPages}}<progress-bar [progress]="((addedPages/dataSet.totalPages)*100).toString()" [color-degraded]="{'0': '#00cbcb',  '15': '#f9c3d3', '25': '#fd8c8e'}"></progress-bar>
@@ -104,48 +89,43 @@ import { GetHttpService, WorkerService } from 'src/app/services';
           </circle-progress> -->
         <!-- </div> -->
       <!-- </mat-card> -->
-    </ng-container>
+    <div class="column small-2">{{dataSets.dataSetName}}</div>
+    <div class="column small-2">Total Pages: {{dataSets.totalPages}}</div>
+    <div class="column small-2">completed: {{((addedPages)/dataSets.totalPages)*100 | number:'2.0-2'}}%</div>
+    <div class="column small-4">
+      <mat-progress-bar
+        class="example"
+        [color]="'primary'"
+        [mode]="'determinate'"
+        [value]="(addedPages/dataSets.totalPages)*100">
+      </mat-progress-bar>
+    </div>
+    <div class="column" *ngFor="let docImage of dataSets.docImageIds">
+      <app-doc-image-card [docImageId]="docImage.id" [totalPages]="docImage.totalPages" (pages)="setAddedPages($event)"></app-doc-image-card>
+    </div>
   `,
   styles:[`
-    .example-margin {
-      margin: 0 10px;
-    }`
-  ],
-  // changeDetection: ChangeDetectionStrategy.Default
+    .example {
+      display: flex;
+      align-content: center;
+      align-items: center;
+      height: 10px;
+    }
+  `],
 })
-export class DataSetCardComponent implements OnInit {
+export class DsCardComponent implements OnInit {
 
-  @Input() dataSetId: string;
-  dataSet: any;
-  addedPages: 0;
+  @Input() dataSets: any;
+  addedPages = 0;
 
-  constructor(
-    private workerService: WorkerService,
-    private getHttpService: GetHttpService,
-    ) { }
+  constructor() { }
 
   ngOnInit(): void {
-    this.workerService.getSingleDoc('data-set', this.dataSetId).then(response => {
-      console.log(response);
-      this.dataSet = response;
-      this.getDocuments(this.dataSetId);
-    }).catch(e => console.log(e));
   }
 
-  addDocuments(id: string){
-    this.getHttpService.getPagesData().subscribe(pages =>
-      this.workerService.addBulkDocs(`doc-images-${id}`,pages).then(r => {
-        // console.log(r);
-        this.getDocuments(this.dataSetId);
-      }).catch(e => console.log(e))
-    );
+  setAddedPages(val: number) {
+    this.addedPages = this.addedPages + val;
   }
-
-  getDocuments(id: string) {
-    this.workerService.getAllDocIdsAndRevs(`doc-images-${id}`).then(r => {
-      // console.log(r);
-      this.addedPages = r.total_rows
-    }).catch(e => console.log(e));
-  }
-
 }
+
+

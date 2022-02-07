@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { DataSetCardComponent } from './data-set-card.component';
+import { DocImageCardComponent } from './doc-image-card.component';
 
-describe('DataSetCardComponent', () => {
-  let component: DataSetCardComponent;
-  let fixture: ComponentFixture<DataSetCardComponent>;
+describe('DocImageCardComponent', () => {
+  let component: DocImageCardComponent;
+  let fixture: ComponentFixture<DocImageCardComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ DataSetCardComponent ]
+      declarations: [ DocImageCardComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(DataSetCardComponent);
+    fixture = TestBed.createComponent(DocImageCardComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

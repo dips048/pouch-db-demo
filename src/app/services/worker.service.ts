@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import PouchDb from 'pouchdb-browser';
 import PouchDB from 'pouchdb-browser';
 import * as pouchdbSize from 'pouchdb-size';
 // for this we have to add  "noImplicitAny": false to tsconfig file
@@ -9,13 +8,13 @@ import { PouchFindService } from '.';
 (<any>PouchDB).adapter('worker', WorkerPouch)
 PouchDB.plugin(pouchdbSize);
 
-
 @Injectable({
   providedIn: 'root'
 })
 export class WorkerService {
   db: PouchDB.Database<{}>;
   dataSetDb: PouchDB.Database<{}>;
+  projectDb: PouchDB.Database<{}>;
 
   constructor(
   ) {
@@ -25,16 +24,7 @@ export class WorkerService {
   }
 
   private createDB(dbName: string = 'example') {
-    this.db = new PouchDB(dbName, {adapter: 'worker'});
-  }
-
-  private createDataSetDb() {
-    this.dataSetDb = new PouchDB('data-set', {adapter: 'worker'});
-  }
-
-  addDBNameToDataSetDb(dbName: string,totalPages: number) {
-    this.createDataSetDb();
-    return this.dataSetDb.put({_id: dbName, totalPages: totalPages});
+    this.db = new PouchDB(dbName, {adapter: 'worker', auto_compaction: true});
   }
 
   addBulkDocs(dbName:string, data: any[]){
@@ -106,19 +96,19 @@ export class WorkerService {
     }
   };
 
-  destroyDatabase(DBName:string ) {
-    this.createDB(DBName);
-    if (this.db) {
-      this.db.destroy().then((response) => {
-        // console.log("Database deleted.");
-      }).catch((err) => {
-        throw new Error(err);
-      });
-    }
-    else {
-      console.log("Please open the database first.");
-      throw new Error("Please open the database first.");
-    }
+  destroyDatabase(dbName:string ) {
+    this.createDB(dbName);
+    return this.db.destroy();
   };
+
+  editDoc(dbName: string, id: string, data: Object): Promise<any> {
+    this.createDB(dbName);
+    return this.db.get(id).then(doc => {
+      for (const [key, value] of Object.entries(data)) {
+        doc[key] = value;
+      }
+      return this.db.put(doc)
+    }).catch(e => console.log(e));
+  }
 
 }

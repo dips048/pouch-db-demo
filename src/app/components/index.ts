@@ -1,5 +1,6 @@
 import { DashboardComponent } from "./dashboard/dashboard.component";
-import { DataSetCardComponent } from "./data-set-card/data-set-card.component";
+import { DocImageCardComponent } from "./doc-image-card/doc-image-card.component";
+import { DsCardComponent } from "./ds-card/ds-card.component";
 import { LogTestComponent } from "./log-test/log-test.component";
 import { PagesComponent } from "./pages/pages.component";
 import { PdfViewerComponent } from "./pdf-viewer/pdf-viewer.component";
@@ -14,6 +15,7 @@ export const components = [
   SettingsComponent,
   TestComponent,
   DashboardComponent,
-  DataSetCardComponent,
-  PagesComponent
+  PagesComponent,
+  DocImageCardComponent,
+  DsCardComponent
 ]

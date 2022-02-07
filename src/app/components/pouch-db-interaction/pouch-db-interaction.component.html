@@ -1,17 +1,27 @@
- <div>
+<div>
+  <label>Project Name </label><input type="text" class="dbId" [(ngModel)]="projectName">
+  <button (click)="addProject(); FindPgDb.value=dbId; FindVaDb.value = dbId">STEP 1: Add Project</button>
+  <label>Data Set Name</label><input type="text" class="dbId" [(ngModel)]="dataSetName">
+</div>
+<!-- <div>
+  <label>Data Set Name</label><input type="text" class="dbId" [(ngModel)]="dataSetName">
+  <button (click)="addDataSet(); FindPgDb.value=dbId; FindVaDb.value = dbId">Add Data Set</button>
+</div> -->
+<div>
   <label for="dbId">Database Name</label><input type="text" class="dbId" [(ngModel)]="dbId">
   <label for="totalPages">Total Pages</label><input type="number" class="dbId" [(ngModel)]="totalPages">
-  <button (click)="generateDbId(); FindPgDb.value=dbId; FindVaDb.value = dbId">Generate Id</button>
+  <button (click)="generateDbId(); FindPgDb.value=dbId; FindVaDb.value = dbId">STEP 2 (optional): Generate Id</button>
+</div>
+
+<div>
+  {{dbId}} <br>
+  <button (click)="setPages(dbId);">STEP 3: Add Pages</button>
+  <button (click)="setTokens(dbId)">Add Tokens</button>
+  <button (click)="getAllDocIdsAndRevs();">Get All Documents</button>
 </div>
 
 <div>
   <button (click)="destroyDatabase(dbId);">Destroy Database</button>
-</div>
-
-<div>
-  {{dbId}} <br>  <button (click)="setTokens(dbId)">Add Tokens</button>
-  <button (click)="setPages(dbId);">Add Pages</button>
-  <button (click)="getAllDocIdsAndRevs();">Get All Documents</button>
 </div>
 
 <div>
@@ -27,14 +37,13 @@
 </div>
 
 <button (click)="startCounter()">start</button>
-<button (click)="stopCounter()">stop</button>
 <button (click)="clearCounter()">clear</button>
 <div> counter: {{counter}} </div>
 
 <!--
 <div><button (click)="addsingleImageDoc()">Add single image record</button></div> -->
-
-<div><button (click)="createIndex()"> create Index</button></div>
+<!--
+<div><button (click)="createIndex()"> create Index</button></div> -->
 
 <div><button (click)="usage()">usage</button></div>
 
