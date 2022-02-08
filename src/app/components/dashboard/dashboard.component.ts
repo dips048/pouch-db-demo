@@ -4,11 +4,12 @@ import { WorkerService } from 'src/app/services';
 @Component({
   selector: 'app-dashboard',
   template: `
+    <h3>Projects</h3>
     <ng-container *ngIf="projects">
       <div *ngFor="let project of projects">
         <div class="row">{{project.id}}</div>
         <div class="row" *ngFor="let dataSets of project.doc.dataSets">
-          <app-ds-card [dataSets]="dataSets"></app-ds-card><br>
+          <app-data-set-card [dataSets]="dataSets"></app-data-set-card><br>
         </div><br>
       </div>
     </ng-container>

@@ -44,7 +44,7 @@ export class DocImageCardComponent implements OnInit {
 
   getDocuments(id: string) {
     this.workerService.getAllDocIdsAndRevs(id).then(r => {
-      console.log(r);
+      // console.log(r);
       this.addedPages = r.total_rows;
       this.pages.emit(r.total_rows);
     }).catch(e => console.log(e));

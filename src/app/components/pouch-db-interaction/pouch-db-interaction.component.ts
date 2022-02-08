@@ -62,21 +62,22 @@ export class PouchDbInteractionComponent implements OnInit {
       navigator.storage.estimate().then(estimate => {
         const available = Math.floor((estimate.quota - estimate.usage));
         if(requiredLength >= available) {
-          this.removeOldestDocImageDb();
+          return this.removeOldestDocImageDb(`doc-images-${dbId}`);
         }
+        return undefined;
       }).then(() => this.addPages(`doc-images-${dbId}`, res.body))
-      .catch(e => console.log(e))
+      .catch(e => console.log(e));
     });
   }
 
   addPages(dbId: string, data: Page[]) {
-    this.workerService.addBulkDocs(dbId, data).then(r => {
+    return this.workerService.addBulkDocs(dbId, data).then(r => {
       this.addDbDataToProjectDb(dbId);
       console.log("data added", r);
     }).then(() => {
       console.time('createIndex');
       this.pouchFindService.createIndex(dbId, ['pageNumber']).then(r => console.timeEnd('createIndex'))
-    }).catch(e => console.log(e));
+    });
   }
 
   setTokens(dbId: string) {
@@ -119,7 +120,7 @@ export class PouchDbInteractionComponent implements OnInit {
 
   getAllDocIdsAndRevs() {
     // console.time('getAllDoc');
-    this.workerService.getAllDocIdsAndRevs().then((docs: any) => {
+    this.workerService.getAllDocIdsAndRevs(`doc-images-${this.dbId}`).then((docs: any) => {
       // console.timeEnd('getAllDoc');
       // console.log("all docs", docs);
     }).catch((err) => {
@@ -209,44 +210,56 @@ export class PouchDbInteractionComponent implements OnInit {
         dataSets.push({dataSetName: this.dataSetName, docImageIds: [], totalPages: 0});
       }
       return this.workerService.editDoc('project', this.projectName, {dataSets}).then(r => console.log(r))
-        .catch(e => console.log(e))
     }).catch(e => console.log(e));
   }
 
   addDbDataToProjectDb(id: string) {
     this.workerService.getSingleDoc('project', this.projectName).then(r => {
       let dataSets: DataSet[] = r.dataSets ? r.dataSets : [];
-      if (!!dataSets.find(ele => ele.dataSetName === this.dataSetName)) {
-        dataSets = dataSets.map(ds => {
-          if(ds.dataSetName === this.dataSetName  && !ds.docImageIds.find(docImageId => docImageId.id === id)) {
-            return {...ds, totalPages: ds.totalPages + this.totalPages, docImageIds: [...ds.docImageIds,  {id, date: new Date().getTime(), totalPages: this.totalPages}]}
-          }
-          return ds;
-        });
+      const dsIndex = dataSets.findIndex(ds => ds.dataSetName === this.dataSetName);
+      if(dsIndex >= 0) {
+        const dataSet = dataSets[dsIndex];
+        const index = dataSet.docImageIds.findIndex(docImage => docImage.id === id);
+        let docImageIds = dataSet.docImageIds;
+        if(index >= 0) {
+          const originalData = docImageIds[index];
+          docImageIds[index] = {id, date: new Date().getTime(), totalPages: this.totalPages};
+          dataSets[dsIndex] = {...dataSet, docImageIds, totalPages: dataSet.totalPages - originalData.totalPages + this.totalPages}
+        } else {
+          docImageIds.push({id, date: new Date().getTime(), totalPages: this.totalPages});
+          dataSets[dsIndex] = {...dataSet, totalPages: dataSet.totalPages + this.totalPages, docImageIds}
+        }
       } else {
         dataSets.push({dataSetName: this.dataSetName, totalPages: this.totalPages, docImageIds: [{id, date: new Date().getTime(), totalPages: this.totalPages}]});
       }
-      this.workerService.editDoc('project', this.projectName, {dataSets}).then(r => console.log(r)).catch(e => console.log(e));
+      return this.workerService.editDoc('project', this.projectName, {dataSets}).then(r => console.log(r));
     }).catch(e => console.log(e));
   }
 
-  async removeOldestDocImageDb() {
-    await this.workerService.getAllDocIdsAndRevs('project').then(r => {
-      let docImageIds = [];
-      r.rows.map(row => row.doc.dataSets?.map(ds => {if(ds.docImageIds) {docImageIds.push(...ds.docImageIds)}}));
-      docImageIds.sort((a,b) => a.date - b.date);
+  removeOldestDocImageDb(dbId) {
+    return this.workerService.getAllDocIdsAndRevs('project').then(r => {
+      let allDocImageIds = [];
+      r.rows.map(row => row.doc.dataSets?.map(ds => {if(ds.docImageIds) {allDocImageIds.push(...ds.docImageIds)}}));
+      // sort the array in ascending order
+      allDocImageIds.sort((a,b) => a.date - b.date);
+      const docImageData = allDocImageIds[0].id === dbId ? allDocImageIds[1] : allDocImageIds[0];
+      if(docImageData) {
       // destroys the oldest pouchdb
-      this.workerService.destroyDatabase(docImageIds[0].id).then(() => console.log(`${docImageIds[0].id} database deleted`))
-        .catch(e => console.log(e));
-      const originalDoc = r.rows.find(row => !!row.doc.dataSets.find(ds => !!ds.docImageIds.find(docImageId => docImageId.id === docImageIds[0].id)));
-      const updatedDoc = originalDoc.doc.dataSets.map(ds => {
-        const docImageIdsData = ds.docImageIds.filter(docImageId => docImageId.id != docImageIds[0].id)
-        let totalPages = 0;
-        docImageIdsData.map(docImage => {totalPages = totalPages + docImage.totalPages})
-        return ({...ds, docImageIds: docImageIdsData, totalPages})
-      });
-      this.workerService.editDoc('project', originalDoc.id, {dataSets: updatedDoc}).then(r => console.log(r)).catch(e => console.log(e));
-    }).catch(e => console.log(e));
+        this.workerService.destroyDatabase(docImageData.id).then(() => console.log(`${docImageData.id} database deleted`))
+          .catch(e => console.log(e));
+        this.workerService.addSingleDoc('deleted', {...docImageData, _id: docImageData.id}).then((r) => console.log(r));
+        const projectDoc = r.rows.find(row => !!row.doc.dataSets.find(ds => !!ds.docImageIds.find(docImageId => docImageId.id === docImageData.id)));
+        const dataSets = projectDoc.doc.dataSets.map(ds => {
+          let totalPages = 0;
+          const docImageIds = ds.docImageIds.filter(docImageId => docImageId.id != docImageData.id);
+          docImageIds.map(docImage => {totalPages = totalPages + docImage.totalPages});
+          return ({...ds, docImageIds, totalPages});
+        });
+        return this.workerService.editDoc('project', projectDoc.id, {dataSets}).then(r => console.log(r));
+      } else { return undefined; }
+    });
   }
+
+
 }
 

@@ -3,7 +3,6 @@ import PouchDB from 'pouchdb-browser';
 import * as pouchdbSize from 'pouchdb-size';
 // for this we have to add  "noImplicitAny": false to tsconfig file
 import WorkerPouch from 'worker-pouch';
-import { PouchFindService } from '.';
 
 (<any>PouchDB).adapter('worker', WorkerPouch)
 PouchDB.plugin(pouchdbSize);
@@ -27,7 +26,7 @@ export class WorkerService {
     this.db = new PouchDB(dbName, {adapter: 'worker', auto_compaction: true});
   }
 
-  addBulkDocs(dbName:string, data: any[]){
+  addBulkDocs(dbName:string, data: any[]): Promise<any> {
     this.createDB(dbName);
     return this.db.bulkDocs(data);
     // return this.pouchFindService.createIndex(dbName, ['pageNumber']).then(() => {
@@ -41,12 +40,12 @@ export class WorkerService {
 
   };
 
-  addSingleDoc(dbName:string, data: any): Promise<PouchDB.Core.Response> {
+  addSingleDoc(dbName: string, data: any): Promise<any> {
     this.createDB(dbName);
     return this.db.put(data);
   };
 
-  getAllDocIdsAndRevs(dbName:string = 'example'): Promise<any> {
+  getAllDocIdsAndRevs(dbName: string): Promise<any> {
     this.createDB(dbName);
     return this.db.allDocs({include_docs: true});
   };

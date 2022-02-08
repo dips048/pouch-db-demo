@@ -1,7 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { DataSet } from 'src/app/shared/models';
 
 @Component({
-  selector: 'app-ds-card',
+  selector: 'app-data-set-card',
   template: `
          <!-- <progress-bar [progress]="((addedPages/dataSet.totalPages)*100).toString()" [color-degraded]="{'0': '#00cbcb',  '15': '#f9c3d3', '25': '#fd8c8e'}"></progress-bar> -->
      <!-- <div class="flex float-right"><progress-bar [progress]="((addedPages/dataSet.totalPages)*100).toString()" [color-degraded]="{'0': '#00cbcb',  '15': '#f9c3d3', '25': '#fd8c8e'}"></progress-bar></div> -->
@@ -89,10 +90,10 @@ import { Component, Input, OnInit } from '@angular/core';
           </circle-progress> -->
         <!-- </div> -->
       <!-- </mat-card> -->
-    <div class="column small-2">{{dataSets.dataSetName}}</div>
+    <div class="column small-1">{{dataSets.dataSetName}}</div>
     <div class="column small-2">Total Pages: {{dataSets.totalPages}}</div>
     <div class="column small-2">completed: {{((addedPages)/dataSets.totalPages)*100 | number:'2.0-2'}}%</div>
-    <div class="column small-4">
+    <div class="column small-5">
       <mat-progress-bar
         class="example"
         [color]="'primary'"
@@ -113,9 +114,9 @@ import { Component, Input, OnInit } from '@angular/core';
     }
   `],
 })
-export class DsCardComponent implements OnInit {
+export class DataSetCardComponent implements OnInit {
 
-  @Input() dataSets: any;
+  @Input() dataSets: DataSet;
   addedPages = 0;
 
   constructor() { }
