@@ -18,37 +18,44 @@ export class AngularLoggerService {
 
   debug(componentName: string, msg: string, ...optionalParams: any[]) {
     this.componentName = componentName;
-    this.writeToLog(msg, LogLevel.Debug, optionalParams);
+    const style = 'color: blue;';
+    this.writeToLog(msg, LogLevel.Debug, style, optionalParams);
   }
 
   info(componentName: string, msg: string, ...optionalParams: any[]) {
     this.componentName = componentName;
-    this.writeToLog(msg, LogLevel.Info, optionalParams);
+    const style = 'color: green;';
+    this.writeToLog(msg, LogLevel.Info, style, optionalParams);
   }
 
   warn(componentName: string, msg: string, ...optionalParams: any[]) {
     this.componentName = componentName;
-    this.writeToLog(msg, LogLevel.Warn, optionalParams);
+    const style = 'color: #FFCC00;';
+    this.writeToLog(msg, LogLevel.Warn, style, optionalParams);
   }
 
   error(componentName: string, msg: string, ...optionalParams: any[]) {
     this.componentName = componentName;
-    this.writeToLog(msg, LogLevel.Error, optionalParams);
+    const style = 'color: #D8000C;';
+    this.writeToLog(msg, LogLevel.Error, style, optionalParams);
   }
 
   fatal(componentName: string, msg: string, ...optionalParams: any[]) {
     this.componentName = componentName;
-    this.writeToLog(msg, LogLevel.Fatal, optionalParams);
+    const style = 'color: #800000;';
+    this.writeToLog(msg, LogLevel.Fatal, style, optionalParams);
   }
 
   log(componentName: string, msg: any, ...optionalParams: any[]) {
     this.componentName = componentName;
-    this.writeToLog(msg, LogLevel.All, optionalParams);
+    const style = '';
+    this.writeToLog(msg, LogLevel.All, style, optionalParams);
   }
 
   stopTimer(componentName: string, label: any, ...optionalParams: any[]) {
     this.componentName = componentName;
-    this.writeToLog(label, LogLevel.Diagnostic, optionalParams);
+    const style = 'color: #800080;';
+    this.writeToLog(label, LogLevel.Diagnostic, style, optionalParams);
   }
 
   startTimer(label: any) {
@@ -118,13 +125,38 @@ export class AngularLoggerService {
     return ret;
   }
 
-  private writeToLog(msg: string, level: LogLevel, params: any[]) {
+  private writeToLog(msg: string, level: LogLevel, style: any, params: any[]) {
     if(this.shouldLog(level)) {
       let entry: LogEntry = new LogEntry(new Date(), msg, level, params, this.logWithDate);
-      if(level === LogLevel.Diagnostic) {
-        console.timeEnd(msg);
-      } else {
-        console.log(entry.buildLogString());
+      switch (level) {
+        case LogLevel.All: {
+          console.log(`%c ${entry.buildLogString()}`, style);
+          break;
+        }
+        case LogLevel.Fatal: {
+          console.log(`%c ${entry.buildLogString()}`, style);
+          break;
+        }
+        case LogLevel.Debug: {
+          console.log(`%c ${entry.buildLogString()}`, style);
+          break;
+        }
+        case LogLevel.Info: {
+          console.log(`%c ${entry.buildLogString()}`, style);
+          break;
+        }
+        case LogLevel.Warn: {
+          console.warn(entry.buildLogString());
+          break;
+        }
+        case LogLevel.Error: {
+          console.error(entry.buildLogString());
+          break;
+        }
+        case LogLevel.Diagnostic: {
+          console.timeEnd(msg);
+          break;
+        }
       }
     }
   }
