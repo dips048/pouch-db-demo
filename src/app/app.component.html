@@ -1,4 +1,30 @@
-<!-- <button (click)="addJob()">add job</button>
-<button (click)="findACustomer()">find customer</button> -->
-<!-- <app-test></app-test> -->
-<app-pouch-db-interaction></app-pouch-db-interaction>
+<!--
+<app-pdf-viewer></app-pdf-viewer>
+
+<app-pouch-db-interaction></app-pouch-db-interaction> -->
+
+<nav class="navbar navbar-fixed navbar-inverse" role="navigation">
+  <div class="container">
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="#" routerLink="/pouch-db-int">Pouch Db</a>
+      </li>
+      <li>
+        <a href="#" routerLink="/pdf-viewer">PDF Viewer</a>
+      </li>
+      <li>
+        <a href="#" routerLink="/log-test">Log Test component</a>
+      </li>
+      <li>
+        <a href="#" routerLink="/test">Test component</a>
+      </li>
+      <li>
+        <a href="#" routerLink="/setting">Setting component</a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<div class="container">
+  <router-outlet></router-outlet>
+</div>

@@ -6,7 +6,11 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "build-angular-logger": "ng build angular-logger",
+    "watch-angular-logger": "ng build angular-logger --watch",
+    "test-angular-logger-watch": "ng test angular-logger --browsers=ChromeHeadless",
+    "pack-angular-logger": "cd dist/angular-logger && npm pack"
   },
   "private": true,
   "dependencies": {
@@ -18,7 +22,9 @@
     "@angular/platform-browser": "~13.0.0",
     "@angular/platform-browser-dynamic": "~13.0.0",
     "@angular/router": "~13.0.0",
+    "@dips048/angular-logger": "file:dist/angular-logger",
     "@types/pouchdb-find": "^6.3.7",
+    "ng2-pdf-viewer": "^7.0.2",
     "path": "^0.12.7",
     "pouchdb": "^7.2.2",
     "pouchdb-browser": "^7.2.2",
@@ -43,6 +49,7 @@
     "karma-coverage": "~2.0.3",
     "karma-jasmine": "~4.0.0",
     "karma-jasmine-html-reporter": "~1.7.0",
+    "ng-packagr": "^13.0.0",
     "typescript": "~4.4.3"
   },
   "browser": {

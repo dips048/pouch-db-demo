@@ -105,6 +105,37 @@
           }
         }
       }
+    },
+    "angular-logger": {
+      "projectType": "library",
+      "root": "projects/angular-logger",
+      "sourceRoot": "projects/angular-logger/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "project": "projects/angular-logger/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/angular-logger/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/angular-logger/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/angular-logger/src/test.ts",
+            "tsConfig": "projects/angular-logger/tsconfig.spec.json",
+            "karmaConfig": "projects/angular-logger/karma.conf.js"
+          }
+        }
+      }
     }
   },
   "defaultProject": "pouch-db-demo"
