@@ -1,6 +1,6 @@
 import { Component, OnDestroy } from '@angular/core';
 import { Product } from '../../shared/models';
-import { AngularLoggerService } from '@dips048/angular-logger';
+import { AngularLoggerService, LogLevel } from '@dips048/angular-logger';
 
 @Component({
   selector: 'app-log-test',
@@ -12,7 +12,7 @@ export class LogTestComponent implements OnDestroy {
   logEntries;
 
   constructor(private logger: AngularLoggerService) {
-    this.logger.registerComponent(this.constructor.name);
+    this.logger.registerComponent(this.constructor.name, LogLevel.All);
   }
 
   testLog() {
