@@ -37,7 +37,7 @@ export class LogTestComponent implements OnDestroy {
     // product.price = 10;
     // product.url = "www.fairwaytech.com";
 
-    this.logger.log(this.constructor.name,"This is a product object", product);
+    this.logger.log(this.constructor.name,"This is a product object", '', product);
   }
 
   getLocalStorage(): void {
