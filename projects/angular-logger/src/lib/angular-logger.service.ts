@@ -16,45 +16,38 @@ export class AngularLoggerService {
     this.changeLogLevel(this.componentName, LogLevel.All);
   }
 
-  debug(componentName: string, msg: string, ...optionalParams: any[]) {
+  debug(componentName: string, msg: string,  style = 'color: blue;', ...optionalParams: any[]) {
     this.componentName = componentName;
-    const style = 'color: blue;';
     this.writeToLog(msg, LogLevel.Debug, style, optionalParams);
   }
 
-  info(componentName: string, msg: string, ...optionalParams: any[]) {
+  info(componentName: string, msg: string, style = 'color: green;', ...optionalParams: any[]) {
     this.componentName = componentName;
-    const style = 'color: green;';
     this.writeToLog(msg, LogLevel.Info, style, optionalParams);
   }
 
-  warn(componentName: string, msg: string, ...optionalParams: any[]) {
+  warn(componentName: string, msg: string, style = 'color: #FFCC00;', ...optionalParams: any[]) {
     this.componentName = componentName;
-    const style = 'color: #FFCC00;';
     this.writeToLog(msg, LogLevel.Warn, style, optionalParams);
   }
 
-  error(componentName: string, msg: string, ...optionalParams: any[]) {
+  error(componentName: string, msg: string, style = 'color: #D8000C;', ...optionalParams: any[]) {
     this.componentName = componentName;
-    const style = 'color: #D8000C;';
     this.writeToLog(msg, LogLevel.Error, style, optionalParams);
   }
 
-  fatal(componentName: string, msg: string, ...optionalParams: any[]) {
+  fatal(componentName: string, msg: string, style = 'color: #800000;',...optionalParams: any[]) {
     this.componentName = componentName;
-    const style = 'color: #800000;';
     this.writeToLog(msg, LogLevel.Fatal, style, optionalParams);
   }
 
-  log(componentName: string, msg: any, ...optionalParams: any[]) {
+  log(componentName: string, msg: any, style = '', ...optionalParams: any[]) {
     this.componentName = componentName;
-    const style = '';
     this.writeToLog(msg, LogLevel.All, style, optionalParams);
   }
 
-  stopTimer(componentName: string, label: any, ...optionalParams: any[]) {
+  stopTimer(componentName: string, label: any, style = 'color: #800080;', ...optionalParams: any[]) {
     this.componentName = componentName;
-    const style = 'color: #800080;';
     this.writeToLog(label, LogLevel.Diagnostic, style, optionalParams);
   }
 
