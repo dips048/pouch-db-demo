@@ -17,7 +17,8 @@ const routes: Routes = [
   { path: 'log-test', component: LogTestComponent },
   { path: 'test', component: TestComponent },
   { path: 'setting', component: SettingsComponent },
-  { path: 'pages/:id', component: PagesComponent }
+  { path: 'pages/:id', component: PagesComponent },
+  { path: 'indexed-db-test', loadChildren: () => import('./indexed-db-test/indexed-db-test.module').then(m => m.IndexedDbTestModule) }
 ];
 
 @NgModule({
