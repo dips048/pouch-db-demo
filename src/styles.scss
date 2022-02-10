@@ -1,1 +1,11 @@
 /* You can add global styles to this file, and also import other style files */
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.row {clear: both;}
+.column {padding: 0 2%;}
+@for $i from 1 to 12 {
+  $w: ($i/12) * 100%;
+  .small-#{$i} {width: $w; float: left;}
+}

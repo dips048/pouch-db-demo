@@ -1,0 +1,23 @@
+<button mat-raised-button [routerLink]="['/dashboard',]">DashBoard</button>
+<ng-container *ngIf="docs">
+  <div *ngIf="dbName">
+    <H3>DB Name: {{dbName}}</H3>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>Page Number</th>
+        <th>Media Type</th>
+        <th>Image Location</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of docs; let i = index;">
+        <td>{{item.doc.pageNumber}}</td>
+        <td>{{item.doc.mediaType}}</td>
+        <td>{{item.doc.imageLocation}}</td>
+      </tr>
+    </tbody>
+  </table>
+</ng-container>
+

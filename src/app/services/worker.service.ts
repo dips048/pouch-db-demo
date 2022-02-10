@@ -3,20 +3,19 @@ import PouchDB from 'pouchdb-browser';
 import * as pouchdbSize from 'pouchdb-size';
 // for this we have to add  "noImplicitAny": false to tsconfig file
 import WorkerPouch from 'worker-pouch';
-import { PouchFindService } from '.';
 
 (<any>PouchDB).adapter('worker', WorkerPouch)
 PouchDB.plugin(pouchdbSize);
-
 
 @Injectable({
   providedIn: 'root'
 })
 export class WorkerService {
   db: PouchDB.Database<{}>;
+  dataSetDb: PouchDB.Database<{}>;
+  projectDb: PouchDB.Database<{}>;
 
   constructor(
-    private pouchFindService: PouchFindService
   ) {
     PouchDB.on("created", (dbname: string) => {
       // console.log("Database: '" + dbname + "' opened successfully.");
@@ -24,11 +23,10 @@ export class WorkerService {
   }
 
   private createDB(dbName: string = 'example') {
-    this.db = new PouchDB(dbName, {adapter: 'worker'});
-    // this.db.info().then(r => console.log(r));
+    this.db = new PouchDB(dbName, {adapter: 'worker', auto_compaction: true});
   }
 
-  addBulkDocs(dbName:string, data: any[]){
+  addBulkDocs(dbName:string, data: any[]): Promise<any> {
     this.createDB(dbName);
     return this.db.bulkDocs(data);
     // return this.pouchFindService.createIndex(dbName, ['pageNumber']).then(() => {
@@ -42,13 +40,14 @@ export class WorkerService {
 
   };
 
-  addSingleDoc(dbName:string, data: any): Promise<PouchDB.Core.Response> {
+  addSingleDoc(dbName: string, data: any): Promise<any> {
     this.createDB(dbName);
     return this.db.put(data);
   };
 
-  getAllDocIdsAndRevs(): Promise<any> {
-    return this.db.allDocs();
+  getAllDocIdsAndRevs(dbName: string): Promise<any> {
+    this.createDB(dbName);
+    return this.db.allDocs({include_docs: true});
   };
 
   countDocuments() {
@@ -58,7 +57,8 @@ export class WorkerService {
     });
   }
 
-  getSingleDoc(id: string): Promise<any> {
+  getSingleDoc(dbName: string, id: string): Promise<any> {
+    this.createDB(dbName);
     return this.db.get(id);
   };
 
@@ -95,19 +95,19 @@ export class WorkerService {
     }
   };
 
-  destroyDatabase(DBName:string ) {
-    this.createDB(DBName);
-    if (this.db) {
-      this.db.destroy().then((response) => {
-        // console.log("Database deleted.");
-      }).catch((err) => {
-        throw new Error(err);
-      });
-    }
-    else {
-      console.log("Please open the database first.");
-      throw new Error("Please open the database first.");
-    }
+  destroyDatabase(dbName:string ) {
+    this.createDB(dbName);
+    return this.db.destroy();
   };
+
+  editDoc(dbName: string, id: string, data: Object): Promise<any> {
+    this.createDB(dbName);
+    return this.db.get(id).then(doc => {
+      for (const [key, value] of Object.entries(data)) {
+        doc[key] = value;
+      }
+      return this.db.put(doc)
+    }).catch(e => console.log(e));
+  }
 
 }

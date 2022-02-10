@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AngularLoggerService, LogLevel } from '@dips048/angular-logger';
+import { DataSet, Page } from 'src/app/shared/models';
 import { GetHttpService, WorkerService } from '../../services';
 import { PouchFindService } from '../../services';
 import { TokenModel } from '../../tokens.model';
@@ -14,10 +15,12 @@ export class PouchDbInteractionComponent implements OnInit {
   pages: any;
   tokens: TokenModel[];
   counter = 0;
-  // interval;
+  totalPages = 300;
+  projectName = 'project-1';
+  dataSetName = 'data-set-1';
 
   constructor(
-    private WorkerService: WorkerService,
+    private workerService: WorkerService,
     private pouchFindService: PouchFindService,
     private getHttpService: GetHttpService,
     private ls: AngularLoggerService
@@ -39,51 +42,50 @@ export class PouchDbInteractionComponent implements OnInit {
   }
 
   startCounter() {
-    // this.interval = setInterval(() => {
-      this.counter++;
-    // },1000)
-  }
-
-  stopCounter() {
-    // clearInterval(this.interval)
+    this.counter++;
   }
 
   clearCounter(){
     this.counter = 0;
   }
 
-  createIndex() {
-    // console.time('CI');
-    this.pouchFindService.createIndex(`doc-images-${this.dbId}`, ['pageNumber']).then(r => {
-      // console.timeEnd('CI');
-    });
-  }
+  // createIndex() {
+  //   // console.time('CI');
+  //   this.pouchFindService.createIndex(`doc-images-${this.dbId}`, ['pageNumber']).then(r => {
+  //     // console.timeEnd('CI');
+  //   });
+  // }
 
   setPages(dbId: string) {
     this.getHttpService.getPagesData().subscribe(res => {
-      // console.log('pages', res);
-      // console.time("addBulkDocs");
-      this.WorkerService.addBulkDocs(`doc-images-${dbId}`, res).then(r => {
-        // console.timeEnd("addBulkDocs");
-        // console.log("data added", r);
-        // console.time('createIndex');
-        this.pouchFindService.createIndex(`doc-images-${dbId}`, ['pageNumber']).then(r => {
-          // console.timeEnd('createIndex');
-        });
-      });
+      const requiredLength = res.headers.get('content-length') ? parseInt(res.headers.get('content-length')) : 0;
+      navigator.storage.estimate().then(estimate => {
+        const available = Math.floor((estimate.quota - estimate.usage));
+        if(requiredLength >= available) {
+          return this.removeOldestDocImageDb(`doc-images-${dbId}`);
+        }
+        return undefined;
+      }).then(() => this.addPages(`doc-images-${dbId}`, res.body))
+      .catch(e => console.log(e));
+    });
+  }
 
-      // this.pouchFindService.addBulkDocs(`doc-images-${dbId}`, res).then(r => {
-      //   this.pouchFindService.createIndex(`doc-images-${dbId}`, ['pageNumber']);
-      // })
+  addPages(dbId: string, data: Page[]) {
+    return this.workerService.addBulkDocs(dbId, data).then(r => {
+      this.addDbDataToProjectDb(dbId);
+      console.log("data added", r);
+    }).then(() => {
+      console.time('createIndex');
+      this.pouchFindService.createIndex(dbId, ['pageNumber']).then(r => console.timeEnd('createIndex'))
     });
   }
 
   setTokens(dbId: string) {
     this.getHttpService.getTokensData().subscribe(res => {
       // console.log('tokens', res);
-      this.WorkerService.addBulkDocs(`doc-tokens-${dbId}`, res).then(r => {
-        this.pouchFindService.createIndex(`doc-tokens-${dbId}`, ['pageNumber']);
-      })
+      this.workerService.addBulkDocs(`doc-tokens-${dbId}`, res).then(r => {
+        this.pouchFindService.createIndex(`doc-tokens-${dbId}`, ['pageNumber']).then();
+      }).catch(e => console.log(e));
       // this.pouchFindService.addBulkDocs(`doc-tokens-${dbId}`, res).then(r => {
       //   this.pouchFindService.createIndex(`doc-tokens-${dbId}`, ['pageNumber']);
       // })
@@ -91,8 +93,6 @@ export class PouchDbInteractionComponent implements OnInit {
   }
 
   generateDbId() {
-    // this.WorkerService.createDB(dbName);
-    // this.pouchFindService.createDB(dbName);
     this.dbId = this.generateUUID();
   }
 
@@ -114,14 +114,13 @@ export class PouchDbInteractionComponent implements OnInit {
 
 
   destroyDatabase(dbId: string) {
-    // this.WorkerService.destroyDatabase(DBName);
     this.pouchFindService.destroyDatabase(`doc-images-${dbId}`);
     this.pouchFindService.destroyDatabase(`doc-tokens-${dbId}`);
   }
 
   getAllDocIdsAndRevs() {
     // console.time('getAllDoc');
-    this.WorkerService.getAllDocIdsAndRevs().then((docs: any) => {
+    this.workerService.getAllDocIdsAndRevs(`doc-images-${this.dbId}`).then((docs: any) => {
       // console.timeEnd('getAllDoc');
       // console.log("all docs", docs);
     }).catch((err) => {
@@ -162,7 +161,7 @@ export class PouchDbInteractionComponent implements OnInit {
   addsingleImageDoc() {
     this.getHttpService.getPagesData().subscribe(res => {
       // console.log("res", res[0]);
-      this.WorkerService.addSingleDoc(`doc-images-${this.dbId}`,res[0]).then((doc: any) => {
+      this.workerService.addSingleDoc(`doc-images-${this.dbId}`,res[0]).then((doc: any) => {
         // console.log('document added',doc);
       }).catch((err: any) => {
         // console.log(err);
@@ -198,6 +197,69 @@ export class PouchDbInteractionComponent implements OnInit {
   // compactDB(){
   //   this.WorkerService.compactDB();
   // };
+
+  addProject() {
+    this.workerService.addSingleDoc('project', {_id: this.projectName}).then(r => console.log(r))
+      .catch(e => console.log(e));
+  }
+
+  addDataSet() {
+    this.workerService.getSingleDoc('project', this.projectName).then(r => {
+      let dataSets = r.dataSets ?? [{dataSetName: this.dataSetName, docImageIds: []}];
+      if (!dataSets.find(ele => ele.dataSetName === this.dataSetName)) {
+        dataSets.push({dataSetName: this.dataSetName, docImageIds: [], totalPages: 0});
+      }
+      return this.workerService.editDoc('project', this.projectName, {dataSets}).then(r => console.log(r))
+    }).catch(e => console.log(e));
+  }
+
+  addDbDataToProjectDb(id: string) {
+    this.workerService.getSingleDoc('project', this.projectName).then(r => {
+      let dataSets: DataSet[] = r.dataSets ? r.dataSets : [];
+      const dsIndex = dataSets.findIndex(ds => ds.dataSetName === this.dataSetName);
+      if(dsIndex >= 0) {
+        const dataSet = dataSets[dsIndex];
+        const index = dataSet.docImageIds.findIndex(docImage => docImage.id === id);
+        let docImageIds = dataSet.docImageIds;
+        if(index >= 0) {
+          const originalData = docImageIds[index];
+          docImageIds[index] = {id, date: new Date().getTime(), totalPages: this.totalPages};
+          dataSets[dsIndex] = {...dataSet, docImageIds, totalPages: dataSet.totalPages - originalData.totalPages + this.totalPages}
+        } else {
+          docImageIds.push({id, date: new Date().getTime(), totalPages: this.totalPages});
+          dataSets[dsIndex] = {...dataSet, totalPages: dataSet.totalPages + this.totalPages, docImageIds}
+        }
+      } else {
+        dataSets.push({dataSetName: this.dataSetName, totalPages: this.totalPages, docImageIds: [{id, date: new Date().getTime(), totalPages: this.totalPages}]});
+      }
+      return this.workerService.editDoc('project', this.projectName, {dataSets}).then(r => console.log(r));
+    }).catch(e => console.log(e));
+  }
+
+  removeOldestDocImageDb(dbId) {
+    return this.workerService.getAllDocIdsAndRevs('project').then(r => {
+      let allDocImageIds = [];
+      r.rows.map(row => row.doc.dataSets?.map(ds => {if(ds.docImageIds) {allDocImageIds.push(...ds.docImageIds)}}));
+      // sort the array in ascending order
+      allDocImageIds.sort((a,b) => a.date - b.date);
+      const docImageData = allDocImageIds[0].id === dbId ? allDocImageIds[1] : allDocImageIds[0];
+      if(docImageData) {
+      // destroys the oldest pouchdb
+        this.workerService.destroyDatabase(docImageData.id).then(() => console.log(`${docImageData.id} database deleted`))
+          .catch(e => console.log(e));
+        this.workerService.addSingleDoc('deleted', {...docImageData, _id: docImageData.id}).then((r) => console.log(r));
+        const projectDoc = r.rows.find(row => !!row.doc.dataSets.find(ds => !!ds.docImageIds.find(docImageId => docImageId.id === docImageData.id)));
+        const dataSets = projectDoc.doc.dataSets.map(ds => {
+          let totalPages = 0;
+          const docImageIds = ds.docImageIds.filter(docImageId => docImageId.id != docImageData.id);
+          docImageIds.map(docImage => {totalPages = totalPages + docImage.totalPages});
+          return ({...ds, docImageIds, totalPages});
+        });
+        return this.workerService.editDoc('project', projectDoc.id, {dataSets}).then(r => console.log(r));
+      } else { return undefined; }
+    });
+  }
+
 
 }
 
