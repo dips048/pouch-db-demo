@@ -1,4 +1,28 @@
 <div>
-  <label for="dbId"> DataBaseName </label><input type="text" [(ngModel)]="dbId">
-  <button (click)="generateDbId();"> Generate Id </button>
+  <label>Project Name </label><input type="text" class="dbId" [(ngModel)]="projectName">
+  <button (click)="addProject();">STEP 1: Add Project</button>
+  <label>Data Set Name</label><input type="text" class="dbId" [(ngModel)]="dataSetName">
 </div>
+<div>
+  <label for="dbId">Database Name</label><input type="text" class="dbId" [(ngModel)]="dbId">
+  <label for="totalPages">Total Pages</label><input type="number" class="dbId" [(ngModel)]="totalPages">
+  <button (click)="generateDbId();">STEP 2 (optional): Generate Id</button>
+</div>
+
+<ng-container *ngIf="pages$ | async as pages">
+  <div><button (click)="addBulkDocs(pages);"> Add Pages to doc-Images-{{dbId}} </button></div>
+</ng-container>
+
+<div>
+  <button (click)="destroyDatabase();">Destroy Database</button>
+</div>
+
+<div>
+  <button (click)="increamentCounter()">Increament counter</button>
+  <button (click)="clearCounter()">clear counter</button>
+  <div> counter: {{counter}} </div>
+</div>
+
+<div><button (click)="usage()">usage</button></div>
+
+<div><button (click)="getDocs()">Get Docs</button></div>

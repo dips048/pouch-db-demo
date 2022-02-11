@@ -7,7 +7,6 @@ import { get, set, update } from 'idb-keyval';
 export class IdbKeyvalService {
 
   db: IDBDatabase = null;
-  objectStore = null;
 
   setValue(id = 'user_id') {
     return set(id, new Date().getTime());
@@ -35,7 +34,7 @@ export class IdbKeyvalService {
       console.log('DB updated from version', oldVersion, 'to', newVersion);
       console.log('upgrade', this.db);
       if (!this.db.objectStoreNames.contains(objectStore)) {
-        this.objectStore = this.db.createObjectStore(objectStore, {
+        this.db.createObjectStore(objectStore, {
           keyPath: 'id',
         });
       }
