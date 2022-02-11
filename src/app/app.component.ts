@@ -9,6 +9,7 @@ import pouchFind from 'pouchdb-find';
 // declare var require: any;
 // import { plugin } from 'pouchdb';
 import PouchDB from 'pouchdb';
+import { Database } from './shared/modules/indexed-db-module';
 
 PouchDB.plugin(pouchFind);
 
@@ -20,6 +21,7 @@ PouchDB.plugin(pouchFind);
 export class AppComponent implements OnInit{
   title = 'pouch-db-demo';
   // db = new PouchDB('jobs');
+  // constructor(private database: Database) {}
 
   ngOnInit(): void {
     // PouchDB.on("created", function (dbname: string) {
@@ -29,6 +31,31 @@ export class AppComponent implements OnInit{
     // this.createIndexes();
   }
 
+  // addNewRecord() {
+  //   // Add new record
+  //   this.database
+  //     .insert(
+  //       'footer',
+  //       [
+  //         {
+  //           id: '01',
+  //           name: 'prasad',
+  //           age: 24,
+  //           email: 'prasad@tutorialspoint.com'
+  //         }
+  //       ],
+  //       true
+  //     )
+  //     .subscribe(data1 => {
+  //       console.log('Insert Data to IndexedDb: ', data1);
+  //     });
+  // }
+  // getRecord() {
+  //   // Get records
+  //   this.database.get('footer', 'footerCache').subscribe(data2 => {
+  //     console.log('Get Data from IndexedDb: ', data2);
+  //   });
+  }
   // addJob() {
   //   this.db.put({
   //     "_id": 'job_003',
@@ -90,4 +117,4 @@ export class AppComponent implements OnInit{
   //   });
   // }
 
-}
+// }

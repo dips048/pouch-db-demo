@@ -15,7 +15,17 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { NgCircleProgressModule } from 'ng-circle-progress';
 import { ProgressBarModule } from 'angular-progress-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { DBModule } from './shared/modules/indexed-db-module';
 
+// let schema = {
+//   version: 1,
+//   name: 'MyDB',
+//   stores: {
+//     ['footer']: {
+//       primaryKey: 'footerCache'
+//     }
+//   }
+// };
 @NgModule({
   declarations: [
     AppComponent,
@@ -33,7 +43,6 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     MatButtonModule,
     MatProgressBarModule,
     NgCircleProgressModule.forRoot({
-      // set defaults here
       radius: 100,
       outerStrokeWidth: 16,
       innerStrokeWidth: 8,
@@ -42,7 +51,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
       animationDuration: 300,
     }),
     ProgressBarModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    // DBModule.provideDB(schema)
   ],
   providers: [],
   bootstrap: [AppComponent]
