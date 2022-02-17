@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AngularLoggerService, LogLevel } from '@dips048/angular-logger';
+import { LoggerService, LogLevel } from '@dips048/angular-logger';
 import { GetHttpService, WorkerService } from '../../services';
 import { PouchFindService } from '../../services';
 import { TokenModel } from '../../tokens.model';
@@ -20,7 +20,7 @@ export class PouchDbInteractionComponent implements OnInit {
     private WorkerService: WorkerService,
     private pouchFindService: PouchFindService,
     private getHttpService: GetHttpService,
-    private ls: AngularLoggerService
+    private ls: LoggerService
   ) {
     this.ls.registerComponent(this.constructor.name, LogLevel.Off);
   }

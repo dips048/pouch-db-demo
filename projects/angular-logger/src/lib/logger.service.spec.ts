@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { AngularLoggerService } from './angular-logger.service';
+import { LoggerService } from './logger.service';
 
-describe('AngularLoggerService', () => {
-  let service: AngularLoggerService;
+describe('LoggerService', () => {
+  let service: LoggerService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(AngularLoggerService);
+    service = TestBed.inject(LoggerService);
   });
 
   it('should be created', () => {

@@ -1,27 +1,28 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, Inject, OnDestroy } from '@angular/core';
 import { Product } from '../../shared/models';
-import { AngularLoggerService, LogLevel } from '@dips048/angular-logger';
+import { LoggerService, LogLevel } from '@dips048/angular-logger';
 
 @Component({
   selector: 'app-log-test',
   templateUrl: './log-test.component.html',
-  styleUrls: ['./log-test.component.scss']
+  styleUrls: ['./log-test.component.scss'],
+  providers: [LoggerService],
 })
-export class LogTestComponent implements OnDestroy {
+export class LogTestComponent {
 
   logEntries;
 
-  constructor(private logger: AngularLoggerService) {
-    this.logger.registerComponent(this.constructor.name, LogLevel.All);
+  constructor(@Inject(LoggerService) private logger: LoggerService) {
+    this.logger.registerComponent(this.constructor.name,LogLevel.All);
   }
 
   testLog() {
-    this.logger.log(this.constructor.name, 'test log');
-    this.logger.warn(this.constructor.name, 'warning');
-    this.logger.debug(this.constructor.name, 'debug');
-    this.logger.error(this.constructor.name, 'error');
-    this.logger.info(this.constructor.name, 'info');
-    this.logger.fatal(this.constructor.name, 'fatal');
+    this.logger.log('test log');
+    this.logger.warn('warning');
+    this.logger.debug('debug');
+    this.logger.error('error');
+    this.logger.info('info');
+    this.logger.fatal('fatal');
   }
 
   clearLog(): void {
@@ -37,21 +38,7 @@ export class LogTestComponent implements OnDestroy {
     // product.price = 10;
     // product.url = "www.fairwaytech.com";
 
-    this.logger.log(this.constructor.name,"This is a product object", '', product);
+    this.logger.log("This is a product object", 'color: black', product);
   }
 
-  getLocalStorage(): void {
-    // let tmp = this.logger.publishers.find(p => p.constructor.name === "LogLocalStorage");
-    // if (tmp != null) {
-    //   this.logger.getAll(this.constructor.name).subscribe(response => this.logEntries = response)
-    //   // let local = tmp as unknown as LogLocalStorage;
-    //   // local.getAll().subscribe(response => this.logEntries = response);
-    // }
-  }
-
-  ngOnDestroy(): void {
-    // if(this.logger.publishers && this.logger.publishers.length) {
-    //   this.logger.publishers[1].location =  'logging';
-    // }
-  }
 }

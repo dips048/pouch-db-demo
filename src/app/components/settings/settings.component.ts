@@ -1,11 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { AppSettings } from '../../shared/models';
 import { AppSettingsService, } from '../../services';
-import { AngularLoggerService, LogLevel } from '@dips048/angular-logger';
+import { LoggerService } from '@dips048/angular-logger';
 
 @Component({
   selector: 'app-settings',
   templateUrl: 'settings.component.html',
+  providers: [LoggerService],
 })
 
 export class SettingsComponent implements OnInit {
@@ -13,7 +14,7 @@ export class SettingsComponent implements OnInit {
 
   constructor(
     private appSettingsService: AppSettingsService,
-    private logger: AngularLoggerService
+    @Inject(LoggerService) private logger: LoggerService
   ) {
     this.logger.registerComponent(this.constructor.name);
   }

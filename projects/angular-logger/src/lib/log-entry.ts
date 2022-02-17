@@ -1,4 +1,4 @@
-import { LogLevel } from ".";
+import { LogLevel } from "./logger.service";
 
 export class LogEntry {
 
