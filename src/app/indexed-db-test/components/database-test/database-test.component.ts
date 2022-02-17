@@ -61,7 +61,21 @@ export class DatabaseTestComponent implements OnInit {
   addBulkDocs(pages) {
     // this.databseService.insert(`doc-images-${this.dbId}`, this.dbId, pages).subscribe(res => console.log(res));
     console.time('addDocs');
+    // this.idbService.addItems(`doc-images-${this.dbId}`, pages).subscribe(res => {console.timeEnd('addDocs');console.log(res)});
+    if (typeof Worker !== 'undefined') {
+      // Create a new
+      const worker = new Worker(new URL('../../../indexed-db-test.worker', import.meta.url));
+      worker.onmessage = ({ data }) => {
+        console.log(`page got message: ${data}`);
+      //  this.idbService.addItems(`doc-images-${this.dbId}`, pages).subscribe(res => {console.timeEnd('addDocs');console.log(res)});
+      };
+      worker.postMessage('hello');
+    } else {
+      // Web workers are not supported in this environment.
+      // You should add a fallback so that your program still executes correctly.
+    }
     this.idbService.addItems(`doc-images-${this.dbId}`, pages).subscribe(res => {console.timeEnd('addDocs');console.log(res)});
+    this.addDbDataToProjectDb(`doc-images-${this.dbId}`);
   }
 
   addDoc(pages) {
@@ -77,8 +91,32 @@ export class DatabaseTestComponent implements OnInit {
     });
   }
 
+  addDbDataToProjectDb(id: string) {
+    this.idbService.getItem('project',this.projectName).subscribe(project => {
+      let dataSets: DataSet[] = (project && project['dataSets']) ? project['dataSets'] : [];
+      const dsIndex = dataSets.findIndex(ds => ds.dataSetName === this.dataSetName);
+      if(dsIndex >= 0) {
+        const dataSet = dataSets[dsIndex];
+        const index = dataSet.docImageIds.findIndex(docImage => docImage.id === id);
+        let docImageIds = dataSet.docImageIds;
+        if(index >= 0) {
+          const originalData = docImageIds[index];
+          docImageIds[index] = {id, date: new Date().getTime(), totalPages: this.totalPages};
+          dataSets[dsIndex] = {...dataSet, docImageIds, totalPages: dataSet.totalPages - originalData.totalPages + this.totalPages}
+        } else {
+          docImageIds.push({id, date: new Date().getTime(), totalPages: this.totalPages});
+          dataSets[dsIndex] = {...dataSet, totalPages: dataSet.totalPages + this.totalPages, docImageIds}
+        }
+      } else {
+        dataSets.push({dataSetName: this.dataSetName, totalPages: this.totalPages, docImageIds: [{id, date: new Date().getTime(), totalPages: this.totalPages}]});
+      }
+      this.idbService.addItem('project', {id: this.projectName, dataSets}).subscribe();
+    })
+  }
+
   destroyDatabase() {
-    this.idbService.deleteDb(`doc-images-${this.dbId}`);
+    // this.idbService.deleteDb(`doc-images-${this.dbId}`);
+    this.idbService.deleteDatabase(`doc-images-${this.dbId}`).then().catch(console.log);
   }
 
   usage() {
@@ -97,4 +135,5 @@ export class DatabaseTestComponent implements OnInit {
   clearCounter(){
     this.counter = 0;
   }
+
 }

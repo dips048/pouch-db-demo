@@ -22,7 +22,7 @@ export class IdbService {
     )));
   }
 
-  getItem<T>(dbName: string, value: string | number, storeName: string = 'store'): Observable<T> {
+  getItem(dbName: string, value: string | number, storeName: string = 'store'): Observable<any> {
     return this.openDb(dbName, storeName).pipe(
       switchMap(db => {
         const tx = db.transaction(storeName, "readwrite");
@@ -49,7 +49,7 @@ export class IdbService {
     );
   }
 
-  addItems<T>(dbName: string, value: T[], storeName: string = 'store'): Observable<T[]> {
+  addItems(dbName: string, value: any[], storeName: string = 'store'): Observable<any> {
     return this.openDb(dbName, storeName).pipe(
       map(db => {
         const tx = db.transaction(storeName, "readwrite");
@@ -107,5 +107,72 @@ export class IdbService {
         return from(store.getAll("concrete-record-sheets"));
       })
     );
+  }
+
+  createDb(dbName: string, storeName: string = 'store', keyPath = 'id', version = 1): Promise<IDBPDatabase<any>> {
+    return openDB(dbName, version, {
+      upgrade(db) {
+        console.log("IndexedDB upgrade");
+        db.createObjectStore(storeName, { keyPath });
+      },
+      blocked() {
+        console.log('blocked');
+      }
+    });
+  }
+
+  async getDocument(dbName: string, value: string | number, storeName: string = 'store'): Promise<any> {
+    const db = await this.createDb(dbName);
+    const tx = db.transaction(storeName, "readwrite");
+    const store = tx.objectStore('store');
+    return await store.get(value);
+  }
+
+  async addDocument(dbName: string, value: any, storeName: string = 'store'): Promise<any> {
+    const db = await this.createDb(dbName);
+    const tx = db.transaction(storeName, "readwrite");
+    return await tx.objectStore(storeName).put({ ...value });
+  }
+
+  async addDocuments<T>(dbName: string, value: T[], storeName: string = 'store'): Promise<any[]> {
+    const db = await this.createDb(dbName, storeName);
+    const tx = db.transaction(storeName, "readwrite");
+    return value.map(v => tx.objectStore(storeName).put({ ...v }));
+  }
+
+  async deleteDocument(dbName: string, value: string | number, storeName: string = 'store'): Promise<void> {
+    const db = await this.createDb(dbName, storeName);
+    const tx = db.transaction(storeName, "readwrite");
+    const store = tx.objectStore(storeName);
+    return await store.delete(value);
+  }
+
+  async deleteDocuments(dbName: string, value: (string | number)[], storeName: string = 'store'): Promise<any[]> {
+    const db = await this.createDb(dbName, storeName);
+    const tx = db.transaction(storeName, "readwrite");
+    const store = tx.objectStore(storeName);
+    return value.map(v => store.delete(v));
+  }
+
+  async getAllDocuments(dbName: string, storeName: string = 'store'): Promise<any> {
+    const db = await this.createDb(dbName, storeName);
+    const tx = db.transaction(storeName, "readonly");
+    const store = tx.objectStore(storeName);
+    return await store.getAll();
+  }
+
+  deleteDatabase(dbName): Promise<any> {
+    return deleteDB(dbName, {
+      blocked() {
+        console.log("deleteDB blocked");
+      }
+    });
+  }
+
+  async checkOfflineReadyy(dbName: string): Promise<any> {
+    const db = await this.createDb(dbName);
+    const tx = db.transaction("Status", "readonly");
+    const store = tx.objectStore("Status");
+    return await store.getAll("concrete-record-sheets");
   }
 }
