@@ -21,11 +21,10 @@ export class PouchDbInteractionComponent implements OnInit {
     private pouchFindService: PouchFindService,
     private getHttpService: GetHttpService,
     private ls: LoggerService
-  ) {
-    this.ls.registerComponent(this.constructor.name, LogLevel.Off);
-  }
+  ) { }
 
   ngOnInit(): void {
+    this.ls.registerComponent(this.constructor.name, LogLevel.Off);
   }
 
 
@@ -140,7 +139,7 @@ export class PouchDbInteractionComponent implements OnInit {
     this.ls.startTimer('findPageByNumber');
     this.pouchFindService.findByPageNumber(`doc-tokens-${dbId}`, parseInt(pageNumber))
       .then((response: any) => {
-        this.ls.stopTimer(this.constructor.name, 'findPageByNumber');
+        this.ls.stopTimer('findPageByNumber');
         this.ls.debug(this.constructor.name,'pages', response);
         // console.log(response);
         // console.timeEnd('findByPage Number');

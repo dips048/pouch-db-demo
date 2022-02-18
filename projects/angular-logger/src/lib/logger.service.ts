@@ -19,12 +19,12 @@ export class LoggerService {
     this.writeToLog(msg, LogLevel.Info, style, optionalParams);
   }
 
-  warn(msg: string, style = 'color: #FFCC00;', ...optionalParams: any[]) {
-    this.writeToLog(msg, LogLevel.Warn, style, optionalParams);
+  warn(msg: string, ...optionalParams: any[]) {
+    this.writeToLog(msg, LogLevel.Warn, '', optionalParams);
   }
 
-  error(msg: string, style = 'color: #D8000C;', ...optionalParams: any[]) {
-    this.writeToLog(msg, LogLevel.Error, style, optionalParams);
+  error(msg: string, ...optionalParams: any[]) {
+    this.writeToLog(msg, LogLevel.Error, '', optionalParams);
   }
 
   fatal(msg: string, style = 'color: #800000;',...optionalParams: any[]) {
@@ -35,11 +35,12 @@ export class LoggerService {
     this.writeToLog(msg, LogLevel.All, style, optionalParams);
   }
 
-  stopTimer(label: any, style = 'color: #800080;', ...optionalParams: any[]) {
-    this.writeToLog(label, LogLevel.Diagnostic, style, optionalParams);
+  stopTimer(label: any) {
+    this.writeToLog(label, LogLevel.Diagnostic, '', null);
   }
 
   startTimer(label: any) {
+    this.level = this.getLogLevel();
     if(this.level !== LogLevel.Off && LogLevel.Diagnostic >= this.level) {
       console.time(label);
     }
@@ -80,8 +81,8 @@ export class LoggerService {
   deleteLogLevel(): void {
     // localStorage.removeItem('logConfig');
     try {
-      let logConfig = JSON.parse(localStorage.getItem('logConfig')) || [];
-      logConfig = {...logConfig, [`${this.componentName}`]: null};
+      let logConfig = JSON.parse(localStorage.getItem('logConfig')) ?? {};
+      delete logConfig[`${this.componentName}`];
       localStorage.setItem('logConfig', JSON.stringify(logConfig));
     }
     catch(ex){
@@ -99,7 +100,7 @@ export class LoggerService {
     }
   }
 
-  shouldLog(level: LogLevel) : boolean {
+  private shouldLog(level: LogLevel) : boolean {
     this.level = this.getLogLevel();
     let ret: boolean = false;
     if(this.level !== LogLevel.Off && level >= this.level) {
@@ -108,7 +109,7 @@ export class LoggerService {
     return ret;
   }
 
-  writeToLog(msg: string, level: LogLevel, style: string, params: any[]) {
+  private writeToLog(msg: string, level: LogLevel, style: string, params: any[]) {
     if(this.shouldLog(level)) {
       let entry: LogEntry = new LogEntry(new Date(), msg, level, params, this.logWithDate);
       switch (level) {

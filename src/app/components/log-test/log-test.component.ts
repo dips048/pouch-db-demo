@@ -1,4 +1,4 @@
-import { Component, Inject, OnDestroy } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { Product } from '../../shared/models';
 import { LoggerService, LogLevel } from '@dips048/angular-logger';
 
@@ -7,12 +7,14 @@ import { LoggerService, LogLevel } from '@dips048/angular-logger';
   templateUrl: './log-test.component.html',
   styleUrls: ['./log-test.component.scss'],
 })
-export class LogTestComponent {
+export class LogTestComponent implements OnInit{
 
   logEntries;
 
-  constructor(private logger: LoggerService) {
-    this.logger.registerComponent(this.constructor.name,LogLevel.All);
+  constructor(private logger: LoggerService) {}
+
+  ngOnInit(): void {
+    this.logger.registerComponent(this.constructor.name,LogLevel.Debug);
   }
 
   testLog() {
