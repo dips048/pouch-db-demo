@@ -7,9 +7,9 @@ import { LogEntry } from './log-entry';
 })
 export class LoggerService {
 
-  level: LogLevel = LogLevel.All;
-  logWithDate: boolean = true;
-  componentName: string = 'default';
+  private level: LogLevel = LogLevel.All;
+  private logWithDate: boolean = true;
+  private componentName: string = 'default';
 
   debug(msg: string,  style = 'color: blue;', ...optionalParams: any[]) {
     this.writeToLog(msg, LogLevel.Debug, style, optionalParams);

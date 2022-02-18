@@ -30,7 +30,7 @@ describe('LoggerService', () => {
 
       service.registerComponent('default', LogLevel.All);
 
-      expect(service.componentName).toEqual('default');
+      //expect(service.componentName).toEqual('default');
       expect(jsonParseSpy).toHaveBeenCalled();
       expect(setItemSpy).toHaveBeenCalledWith('logConfig', '{"default":0}');
     })
@@ -41,7 +41,7 @@ describe('LoggerService', () => {
 
       service.registerComponent('default', LogLevel.All);
 
-      expect(service.componentName).toEqual('default');
+      // expect(service.componentName).toEqual('default');
       expect(jsonParseSpy).toHaveBeenCalled();
       expect(setItemSpy).not.toHaveBeenCalledWith('logConfig', '{"default":0}');
     })
@@ -51,21 +51,18 @@ describe('LoggerService', () => {
 
     beforeEach(() => {
       localStorage.clear();
-      localStorage.setItem('logConfig', '{"test":0}')
-      service.componentName = 'test';
     })
 
-    it('should add new value of "default" with its level in localStorage', () => {
+    it('should add new value of "default" with its level in localStorage if no value present', () => {
       let setItemSpy = spyOn(localStorage, 'setItem');
 
-      localStorage.clear();
-      service.componentName = "default"
       service.changeLogLevel(LogLevel.Off);
 
       expect(setItemSpy).toHaveBeenCalledWith('logConfig', '{"default":7}');
     })
 
     it('should update the value of "test" in localStorage', () => {
+      service.registerComponent('test', LogLevel.All);
       let setItemSpy = spyOn(localStorage, 'setItem');
 
       service.changeLogLevel(LogLevel.Off);
@@ -74,9 +71,10 @@ describe('LoggerService', () => {
     })
 
     it('should insert value of "default" in localStorage without removing the old data', () => {
+      service.registerComponent('test', LogLevel.All);
+      service.registerComponent('default', LogLevel.All);
       let setItemSpy = spyOn(localStorage, 'setItem');
 
-      service.componentName = "default"
       service.changeLogLevel(LogLevel.Off);
 
       expect(setItemSpy).toHaveBeenCalledWith('logConfig', '{"test":0,"default":7}');
@@ -87,56 +85,47 @@ describe('LoggerService', () => {
   describe('on getLogLevel()', () => {
     beforeEach(() => {
       localStorage.clear();
-      service.componentName = 'test';
     })
     it("should return value of component's level from localStorage", () => {
-      localStorage.setItem('logConfig', '{"test":6}');
+      service.registerComponent('test', LogLevel.Debug);
+      // localStorage.setItem('logConfig', '{"test":6}');
 
       const data = service.getLogLevel();
 
-      expect(service.componentName).toEqual('test');
-      expect(data).toEqual(6);
+      // expect(service.componentName).toEqual('test');
+      expect(data).toEqual(1);
     })
 
     it("should return default level if no data found in localstorage", () => {
 
       const data = service.getLogLevel();
 
-      expect(service.componentName).toEqual('test');
-      expect(data).toEqual(service.level);
+      // expect(service.componentName).toEqual('test');
+      expect(data).toEqual(0);
     })
-  })
-
-  it("log() should not console.log the msg when logLevel is Off", () => {
-    service.level = LogLevel.Off;
-    let consoleSpy = spyOn(console, 'log');
-
-    service.log('abc', 'color: blue');
-
-    expect(consoleSpy).not.toHaveBeenCalled();
   })
 
   describe('service method', () => {
     let consoleSpy;
 
     beforeEach(() => {
-      service.componentName = 'test';
+      service.registerComponent('test', LogLevel.All);
       consoleSpy = spyOn(console, 'log');
-      localStorage.setItem('logConfig', '{"test":0}');
+      // localStorage.setItem('logConfig', '{"test":0}');
     })
 
     it("log() should console.log the msg when logLevel is All", () => {
       service.log('abc', 'color: blue');
       //service.writeToLog('abc', LogLevel.All, 'color: blue', []);
 
-      expect(consoleSpy).toHaveBeenCalledWith(`%c ${new LogEntry(new Date(), 'abc', LogLevel.All, [], service.logWithDate).buildLogString()}`, 'color: blue');
+      expect(consoleSpy).toHaveBeenCalledWith(`%c ${new LogEntry(new Date(), 'abc', LogLevel.All, [], true).buildLogString()}`, 'color: blue');
     })
 
     it("debug() should console.log the msg when logLevel is All", () => {
       service.debug('abc', 'color: blue');
       // service.writeToLog('abc', LogLevel.Debug, 'color: blue', []);
 
-      expect(consoleSpy).toHaveBeenCalledWith(`%c ${new LogEntry(new Date(), 'abc', LogLevel.Debug, [], service.logWithDate).buildLogString()}`, 'color: blue');
+      expect(consoleSpy).toHaveBeenCalledWith(`%c ${new LogEntry(new Date(), 'abc', LogLevel.Debug, [], true).buildLogString()}`, 'color: blue');
     })
 
     it("error() should console.error the msg when logLevel is All", () => {
@@ -145,7 +134,7 @@ describe('LoggerService', () => {
       service.error('abc');
       // service.writeToLog('abc', LogLevel.Error, '', []);
 
-      expect(consoleSpy).toHaveBeenCalledWith(`${new LogEntry(new Date(), 'abc', LogLevel.Error, [], service.logWithDate).buildLogString()}`);
+      expect(consoleSpy).toHaveBeenCalledWith(`${new LogEntry(new Date(), 'abc', LogLevel.Error, [], true).buildLogString()}`);
     })
 
     it("warn() should console.warn the msg when logLevel is All", () => {
@@ -154,14 +143,14 @@ describe('LoggerService', () => {
       service.warn('abc');
       // service.writeToLog('abc', LogLevel.Warn, '', []);
 
-      expect(consoleSpy).toHaveBeenCalledWith(`${new LogEntry(new Date(), 'abc', LogLevel.Warn, [], service.logWithDate).buildLogString()}`);
+      expect(consoleSpy).toHaveBeenCalledWith(`${new LogEntry(new Date(), 'abc', LogLevel.Warn, [], true).buildLogString()}`);
     })
 
     it("fatal() should console.log the msg when logLevel is All", () => {
       service.fatal('abc', 'color: blue');
       // service.writeToLog('abc', LogLevel.Fatal, 'color: blue', []);
 
-      expect(consoleSpy).toHaveBeenCalledWith(`%c ${new LogEntry(new Date(), 'abc', LogLevel.Fatal, [], service.logWithDate).buildLogString()}`, 'color: blue');
+      expect(consoleSpy).toHaveBeenCalledWith(`%c ${new LogEntry(new Date(), 'abc', LogLevel.Fatal, [], true).buildLogString()}`, 'color: blue');
     })
 
 
@@ -169,7 +158,7 @@ describe('LoggerService', () => {
       service.info('abc', 'color: blue');
       // service.writeToLog('abc', LogLevel.Info, 'color: blue', []);
 
-      expect(consoleSpy).toHaveBeenCalledWith(`%c ${new LogEntry(new Date(), 'abc', LogLevel.Info, [], service.logWithDate).buildLogString()}`, 'color: blue');
+      expect(consoleSpy).toHaveBeenCalledWith(`%c ${new LogEntry(new Date(), 'abc', LogLevel.Info, [], true).buildLogString()}`, 'color: blue');
     })
 
     it("stopTimer() should console.timeEnd the msg when logLevel is All", () => {
@@ -182,24 +171,6 @@ describe('LoggerService', () => {
     })
 
     it("startTimer() should console.time the msg when logLevel is All", () => {
-      consoleSpy = spyOn(console, 'time');
-
-      service.startTimer('abc');
-
-      expect(consoleSpy).toHaveBeenCalledWith('abc');
-    })
-
-    it("startTimer() should not console.time the msg when logLevel is Off", () => {
-      service.level = LogLevel.Off;
-      consoleSpy = spyOn(console, 'time');
-
-      service.startTimer('abc');
-
-      expect(consoleSpy).not.toHaveBeenCalled();
-    })
-
-    it("startTimer() should console.time the msg when logLevel is Diagnostic", () => {
-      service.level = LogLevel.Diagnostic;
       consoleSpy = spyOn(console, 'time');
 
       service.startTimer('abc');
@@ -220,7 +191,7 @@ describe('LoggerService', () => {
 
     beforeEach(() => {
       localStorage.clear();
-      service.componentName = 'testComponent';
+      service.registerComponent('testComponent', LogLevel.All);
     })
 
     it('should remove value of "testComponent" with its level value in localStorage', () => {
@@ -241,14 +212,23 @@ describe('LoggerService', () => {
     })
   })
 
-  describe('service method', () => {
+  describe('service method logLevel "Off"', () => {
     let consoleSpy;
 
     beforeEach(() => {
-      service.componentName = 'test';
+      localStorage.clear();
+      service.registerComponent('test', LogLevel.Off);
       consoleSpy = spyOn(console, 'log');
-      localStorage.setItem('logConfig', '{"test":7}');
     })
+
+    it("startTimer() should not console.time the msg when logLevel is Off", () => {
+      consoleSpy = spyOn(console, 'time');
+
+      service.startTimer('abc');
+
+      expect(consoleSpy).not.toHaveBeenCalled();
+    })
+
 
     it("log() should not console.log the msg when logLevel is Off", () => {
       service.log('abc', 'color: blue');
@@ -308,33 +288,14 @@ describe('LoggerService', () => {
     })
   })
 
-  // describe('on shouldLog()', () => {
-  //   it("should return true if level is >= default level", () => {
-  //     let getLogLevelSpy = spyOn(service, "getLogLevel").and.returnValue(1);
+  it("log() should not console.log the msg when logLevel is Off and component is not registered", () => {
+    localStorage.clear();
+    service.changeLogLevel(LogLevel.Off)
+    let consoleSpy = spyOn(console, 'log');
 
-  //     const data = service.shouldLog(4);
+    service.log('abc', 'color: blue');
 
-  //     expect(getLogLevelSpy).toHaveBeenCalled();
-  //     expect(data).toEqual(true);
-  //   })
+    expect(consoleSpy).not.toHaveBeenCalled();
+  })
 
-  //   it("should return false if default level >= level", () => {
-  //     let getLogLevelSpy = spyOn(service, "getLogLevel").and.returnValue(5);
-
-  //     const data = service.shouldLog(4);
-
-  //     expect(getLogLevelSpy).toHaveBeenCalled();
-  //     expect(data).toEqual(false);
-  //   })
-
-  //   it("should return false if level is 'Off'", () => {
-  //     let getLogLevelSpy = spyOn(service, "getLogLevel").and.returnValue(LogLevel.Off);
-
-  //     const data = service.shouldLog(4);
-
-  //     expect(getLogLevelSpy).toHaveBeenCalled();
-  //     expect(data).toEqual(false);
-  //   })
-
-  // })
 });
