@@ -6,13 +6,12 @@ import { LoggerService, LogLevel } from '@dips048/angular-logger';
   selector: 'app-log-test',
   templateUrl: './log-test.component.html',
   styleUrls: ['./log-test.component.scss'],
-  providers: [LoggerService],
 })
 export class LogTestComponent {
 
   logEntries;
 
-  constructor(@Inject(LoggerService) private logger: LoggerService) {
+  constructor(private logger: LoggerService) {
     this.logger.registerComponent(this.constructor.name,LogLevel.All);
   }
 

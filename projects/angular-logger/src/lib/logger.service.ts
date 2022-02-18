@@ -1,21 +1,10 @@
 import { Injectable } from '@angular/core';
+import { LogLevel } from '.';
 import { LogEntry } from './log-entry';
 
-export enum LogLevel {
-  All = 0,
-  Debug = 1,
-  Info = 2,
-  Warn = 3,
-  Error = 4,
-  Fatal = 5,
-  Diagnostic = 6,
-  Off = 7
-}
-
-// @Injectable({
-//   providedIn: 'root'
-// })
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class LoggerService {
 
   level: LogLevel = LogLevel.All;
@@ -43,8 +32,6 @@ export class LoggerService {
   }
 
   log(msg: any, style = 'color: brown', ...optionalParams: any[]) {
-    const a = console.trace();
-    console.log('a',a);
     this.writeToLog(msg, LogLevel.All, style, optionalParams);
   }
 
@@ -65,12 +52,13 @@ export class LoggerService {
   registerComponent(componentName: string, logLevel: LogLevel = LogLevel.Off) {
     this.componentName = componentName;
     try {
-      let logConfig = JSON.parse(localStorage.getItem('logConfig')) || [];
-      if(logConfig[`${this.componentName}`]) {
+      let logConfig = JSON.parse(localStorage.getItem('logConfig')) ?? {};
+      if(logConfig[`${this.componentName}`] !== undefined) {
         return;
+      } else {
+        logConfig = {...logConfig, [`${this.componentName}`]: logLevel};
+        localStorage.setItem('logConfig', JSON.stringify(logConfig));
       }
-      logConfig = {...logConfig, [`${this.componentName}`]: logLevel};
-      localStorage.setItem('logConfig', JSON.stringify(logConfig));
     }
     catch(ex){
       console.log(ex);
@@ -80,7 +68,7 @@ export class LoggerService {
 
   changeLogLevel(logLevel: LogLevel) {
     try {
-      let logConfig = JSON.parse(localStorage.getItem('logConfig')) || [];
+      let logConfig = JSON.parse(localStorage.getItem('logConfig')) ?? {};
       logConfig = {...logConfig, [`${this.componentName}`]: logLevel};
       localStorage.setItem('logConfig', JSON.stringify(logConfig));
     }
@@ -101,7 +89,7 @@ export class LoggerService {
     }
   }
 
-  private getLogLevel(): any {
+  getLogLevel(): any {
     let logConfig = JSON.parse(localStorage.getItem('logConfig'));
     if (logConfig && logConfig[`${this.componentName}`]) {
       return logConfig[`${this.componentName}`];
@@ -111,7 +99,7 @@ export class LoggerService {
     }
   }
 
-  private shouldLog(level: LogLevel) : boolean {
+  shouldLog(level: LogLevel) : boolean {
     this.level = this.getLogLevel();
     let ret: boolean = false;
     if(this.level !== LogLevel.Off && level >= this.level) {
@@ -120,7 +108,7 @@ export class LoggerService {
     return ret;
   }
 
-  private writeToLog(msg: string, level: LogLevel, style: string, params: any[]) {
+  writeToLog(msg: string, level: LogLevel, style: string, params: any[]) {
     if(this.shouldLog(level)) {
       let entry: LogEntry = new LogEntry(new Date(), msg, level, params, this.logWithDate);
       switch (level) {

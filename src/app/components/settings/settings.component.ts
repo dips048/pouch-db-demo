@@ -6,7 +6,6 @@ import { LoggerService } from '@dips048/angular-logger';
 @Component({
   selector: 'app-settings',
   templateUrl: 'settings.component.html',
-  providers: [LoggerService],
 })
 
 export class SettingsComponent implements OnInit {
@@ -14,7 +13,7 @@ export class SettingsComponent implements OnInit {
 
   constructor(
     private appSettingsService: AppSettingsService,
-    @Inject(LoggerService) private logger: LoggerService
+    private logger: LoggerService
   ) {
     this.logger.registerComponent(this.constructor.name);
   }

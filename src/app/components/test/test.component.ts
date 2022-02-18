@@ -5,8 +5,7 @@ import { Product } from 'src/app/shared/models';
 @Component({
   selector: 'app-test',
   templateUrl: './test.component.html',
-  styleUrls: ['./test.component.scss'],
-  providers: [LoggerService]
+  styleUrls: ['./test.component.scss']
 })
 export class TestComponent{
   logEntries;
