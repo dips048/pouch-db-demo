@@ -64,7 +64,6 @@ export class LoggerService {
     catch(ex){
       console.log(ex);
     }
-    console.log(this.componentName , this.constructor.name);
   }
 
   changeLogLevel(logLevel: LogLevel) {
