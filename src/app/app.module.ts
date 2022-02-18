@@ -7,7 +7,7 @@ import { FormsModule } from '@angular/forms';
 import { components } from './components';
 import { PdfViewerModule } from 'ng2-pdf-viewer';
 import { AppRoutingModule } from './app-routing.module';
-import { AngularLoggerModule } from '@dips048/angular-logger';
+import { LoggerModule } from '@dips048/angular-logger';
 
 @NgModule({
   declarations: [
@@ -20,7 +20,7 @@ import { AngularLoggerModule } from '@dips048/angular-logger';
     FormsModule,
     HttpClientModule,
     PdfViewerModule,
-    AngularLoggerModule
+    LoggerModule
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { AppSettings } from '../../shared/models';
 import { AppSettingsService, } from '../../services';
-import { AngularLoggerService, LogLevel } from '@dips048/angular-logger';
+import { LoggerService } from '@dips048/angular-logger';
 
 @Component({
   selector: 'app-settings',
@@ -13,21 +13,20 @@ export class SettingsComponent implements OnInit {
 
   constructor(
     private appSettingsService: AppSettingsService,
-    private logger: AngularLoggerService
-  ) {
-    this.logger.registerComponent(this.constructor.name);
-  }
+    private logger: LoggerService
+  ) {}
 
   testLog() {
-    this.logger.log(this.constructor.name, 'test log');
-    this.logger.warn(this.constructor.name, 'warning');
-    this.logger.debug(this.constructor.name, 'debug');
-    this.logger.error(this.constructor.name, 'error');
-    this.logger.info(this.constructor.name, 'info');
-    this.logger.fatal(this.constructor.name, 'fatal');
+    this.logger.log('test log');
+    this.logger.warn('warning');
+    this.logger.debug('debug');
+    this.logger.error('error');
+    this.logger.info('info');
+    this.logger.fatal('fatal');
   }
 
   ngOnInit(): void {
+    this.logger.registerComponent(this.constructor.name);
     this.appSettingsService.getSettings()
       .subscribe(settings => this.settings = settings);
   }

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AngularLoggerService, LogLevel } from '@dips048/angular-logger';
+import { LoggerService, LogLevel } from '@dips048/angular-logger';
 import { GetHttpService, WorkerService } from '../../services';
 import { PouchFindService } from '../../services';
 import { TokenModel } from '../../tokens.model';
@@ -20,12 +20,11 @@ export class PouchDbInteractionComponent implements OnInit {
     private WorkerService: WorkerService,
     private pouchFindService: PouchFindService,
     private getHttpService: GetHttpService,
-    private ls: AngularLoggerService
-  ) {
-    this.ls.registerComponent(this.constructor.name, LogLevel.Off);
-  }
+    private ls: LoggerService
+  ) { }
 
   ngOnInit(): void {
+    this.ls.registerComponent(this.constructor.name, LogLevel.Off);
   }
 
 
@@ -140,7 +139,7 @@ export class PouchDbInteractionComponent implements OnInit {
     this.ls.startTimer('findPageByNumber');
     this.pouchFindService.findByPageNumber(`doc-tokens-${dbId}`, parseInt(pageNumber))
       .then((response: any) => {
-        this.ls.stopTimer(this.constructor.name, 'findPageByNumber');
+        this.ls.stopTimer('findPageByNumber');
         this.ls.debug(this.constructor.name,'pages', response);
         // console.log(response);
         // console.timeEnd('findByPage Number');
